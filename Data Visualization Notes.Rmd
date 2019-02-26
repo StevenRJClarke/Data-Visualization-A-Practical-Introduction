@@ -1,0 +1,601 @@
+---
+title: "Data Visualization Notes"
+author: "Kieran Healy"
+date: "2019-01-02"
+output: html_document
+---
+   
+## Data Visualization Notes
+
+This is a starter RMarkdown template to accompany *Data Visualization* (Princeton University Press, 2019). You can use it to take notes, write your code, and produce a good-looking, reproducible document that records the work you have done. At the very top of the file is a section of *metadata*, or information about what the file is and what it does. The metadata is delimited by three dashes at the start and another three at the end. You should change the title, author, and date to the values that suit you. Keep the `output` line as it is for now, however. Each line in the metadata has a structure. First the *key* ("title", "author", etc), then a colon, and then the *value* associated with the key.  
+
+## This is an RMarkdown File
+
+Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. A *code chunk* is a specially delimited section of the file. You can add one by moving the cursor to a blank line choosing Code > Insert Chunk from the RStudio menu. When you do, an empty chunk will appear:
+
+```{r}
+
+
+```
+
+Code chunks are delimited by three backticks (found to the left of the 1 key on US and UK keyboards) at the start and end. The opening backticks also have a pair of braces and the letter `r`, to indicate what language the chunk is written in. You write your code inside the code chunks. Write your notes and other material around them, as here. 
+
+## Before you Begin
+
+To install the tidyverse, make sure you have an Internet connection. Then *manually* run the code in the chunk below. If you knit the document if will be skipped. We do this because you only need to install these packages once, not every time you run this file. Either knit the chunk using the little green "play" arrow to the right of the chunk area, or copy and paste the text into the console window.
+
+```{r install, eval = FALSE}
+
+## This code will not be evaluated automatically.
+## (Notice the eval = FALSE declaration in the options section of the
+## code chunk)
+
+my_packages <- c("tidyverse", "broom", "coefplot", "cowplot",
+                 "gapminder", "GGally", "ggrepel", "ggridges", "gridExtra",
+                 "here", "interplot", "margins", "maps", "mapproj",
+                 "mapdata", "MASS", "quantreg", "rlang", "scales",
+                 "survey", "srvyr", "viridis", "viridisLite", "devtools")
+
+install.packages(my_packages, repos = "http://cran.rstudio.com")
+
+```
+
+We also need to download the *socviz* library from GitHub.
+
+```{r eval = FALSE}
+devtools::install_github("kjhealy/socviz")
+```
+
+
+## Set Up Your Project and Load Libraries
+
+To begin we must load some libraries we will be using. If we do not load them, R will not be able to find the functions contained in these libraries. The tidyverse includes ggplot and other tools. We also load the socviz and gapminder libraries.
+
+```{r setup, include=FALSE}
+
+## By defult, show code for all chunks in the knitted document,
+## as well as the output. To override for a particular chunk
+## use echo = FALSE in its options.
+knitr::opts_chunk$set(echo = TRUE) 
+
+## Set the default size of figures
+knitr::opts_chunk$set(fig.width=8, fig.height=5)  
+
+## Load the libraries we will be using
+library(gapminder)
+library(here)
+library(socviz)
+library(tidyverse)
+
+```
+
+Notice that here, the braces at the start of the code chunk have some additional options set in them. There is the language, `r`, as before. This is required. Then there is the word `setup`, which is a label for your code chunk. Labels are useful to briefly say what the chunk does. Label names must be unique (no two chunks in the same document can have the same label) and cannot contain spaces. Then, after the comma, an option is set: `include=FALSE`. This tells R to run this code but not to include the output in the final document. 
+
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r look}
+gapminder
+```
+
+The remainder of this document contains the chapter headings for the book, and an empty code chunk in each section to get you started. Try knitting this document now by clicking the "Knit" button in the RStudio toolbar, or choosing File > Knit Document from the RStudio menu.
+
+## Get Started
+
+### Everything is an object
+
+*c()* is a function, where c is short for "combine" or "concatenate". It takes a sequence of comma-separated elements in brackets and joins them into a vector where each element is still individually accessible.
+
+```{r}
+c(1, 2, 3, 1, 3, 5, 25)
+```
+
+We can assign this to a variable. Use Alt + - to produce the assignment symbol <-.
+
+```{r}
+my_numbers <- c(1, 2, 3, 1, 3, 5, 25)
+your_numbers <- c(5, 31, 71, 1, 3, 21, 6)
+```
+
+Type in the variable name to see the assigned object.
+
+```{r}
+my_numbers
+```
+
+### You do things using functions
+
+We can pass these numbers as an argument to functions.
+
+#### Mean
+
+*mean()* finds the mean of a set of numbers.
+
+```{r}
+mean(my_numbers)
+```
+
+#### Summary
+
+You can assign the result of a function to a variable and output it.
+
+*summary()* gives some summary statistics of the numbers.
+
+```{r}
+my_summary <- summary(my_numbers)
+my_summary
+```
+
+### Functions come in packages
+
+#### Table
+
+*table()* provides a count of each element.
+
+```{r}
+table(my_numbers)
+```
+
+#### vector * scalar**
+
+If we multiply a vector by a number, each element in that vector gets multiplied by that number.
+
+```{r}
+my_numbers * 5
+```
+
+#### vector + scalar**
+
+If we add a number to a vector, that number is added to each element in turn.
+
+```{r}
+my_numbers + 1
+```
+
+#### vector + vector**
+
+If we add vectors of the same length (such as adding a vector to itself), each element in one vector is added to the corresponding element in the other vector.
+
+```{r}
+my_numbers + my_numbers
+```
+
+### If you're not sure what an object is, ask for its class
+
+Every object has a class.Use the *class()* function to find the class of an object.
+
+```{r}
+class(my_numbers)
+```
+
+```{r}
+class(my_summary)
+```
+
+```{r}
+class(summary)
+```
+
+Actions can change a class. Adding a *character* to a *numeric* vector will turn the whole object to a *character* and the numbers will be enclosed in quotes.
+
+```{r}
+my_new_vector <- c(my_numbers, "Apple")
+my_new_vector
+```
+
+### Data Tables and Tibbles
+
+The most common type of data object in R is a *data frame*, which consists of a rectangular table consisting of rows (of observations) and columns (of variables).
+
+Here is a small dataset from the *socviz* library:
+
+```{r}
+titanic
+```
+
+```{r}
+class(titanic)
+```
+
+The $ operator allows you to pick out a named column of a data frame:
+
+```{r}
+titanic$percent
+```
+
+A *tibble* is an augmented data frame. We can convert a data frame to a tibble:
+
+```{r}
+titanic.tb <- as_tibble(titanic)
+titanic.tb
+```
+
+### To see inside an object, ask for its structure
+
+The *str()* function lets you see inside an object.
+
+Objects can be simple...
+
+```{r}
+str(my_numbers)
+```
+
+...or obhect can be more complicated, although they are usually organized collections of simpler objects.
+
+```{r}
+str(my_summary)
+```
+
+### Be patient with R, and with yourself
+
+In *ggplot*, we will build up plots a piece at a time by adding expressions to one another. When doing this, make sure your + character goes at the end of the line, like this...
+
+```{r eval = FALSE}
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+geom_point()
+```
+
+...not like this:
+
+```{r eval = FALSE}
+ggplot(data = mpg, aes(x = displ, y = hwy))
++ geom_point()
+```
+
+### Get data into R
+
+Use he *read_csv()* function to read in comma-separated data.
+
+Give the function an url and it will fetch the data. A messarge will be printed at the console, telling us that a class has been assigned to each column of the object it has created.
+
+```{r}
+url <- "https://cdn.rawgit.com/kjhealy/viz-organdata/master/organdonation.csv"
+
+organs <-  read_csv(file = url)
+```
+
+### Make your first figure
+
+Let us make a scatterplot of the *gapminder* data. 
+
+Let's take a look at the data first.
+
+```{r}
+gapminder
+```
+
+We will make a scatterplot of *lifeExp* (life expectancy) against *gdpPerCap* (GDP per capita).
+
+```{r}
+p <-  ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p  + geom_point()
+```
+
+## Make a Plot
+
+At the end of *Chapter 2*, we plotted a graph using *ggplot*. The steps are always the same.
+
+**Data**
+
+First we tell *ggplot* what **data** we are using, using the *data* argument: 
+
+```{r eval = FALSE}
+p <-  ggplot(data = gapminder)
+```
+
+**Aesthetic mappings**
+
+Second, we tell *ggplot* which variables in the data should be **mapped** to visual elements in the plot, using the *mapping* argument. 
+
+It is passed the *aes()* function (for *aes*thetics).
+
+```{r}
+p <- ggplot(data = gapminder, 
+            
+            mapping = aes(x = gdpPercap, y = lifeExp))
+```
+
+This says that the variable on the x-axis will be *gdpPercap* and the variable on the y-axis will be *lifeExp*.
+
+But by this point, we don't yet have a graph...
+
+```{r}
+p
+```
+
+**Type of plot**
+
+Add a *layer* specifying the type of plot you want by picking a *geom_* function.
+
+We will use *geom_point()* to plot the x and y values as a scatterplot:
+
+```{r}
+p + geom_point()
+```
+
+### Build your plots layer by layer
+
+Plots are built up by *adding layers* one at a time. It really is an *additive* process.
+
+Let's try a different *geom_* function.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_smooth()
+```
+
+This creates a smoothed line and adds a shaded ribbon showing the standard error of the line.
+
+If we want to see the data points and the line together, we simply *add geom_point()* back in.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() + geom_smooth()
+```
+
+Notice in the console message that *geom_smooth()* is using *method = gam* (for generalized additive model).
+
+We could instead use *method = lm* for a linear model.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() + geom_smooth(method = "lm")
+```
+
+We haven't had to tell *geom_point()* or *geom_smooth()* where to get its data from. It *inherits* it from the *p* object.
+
+Looking at our data, it is all bunched up against the left hand side. The scale would look better if it was transformed from a linear scale to a log scale.
+
+*Add* the *scale_x_log10()* function to *p*:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() + geom_smooth(method = "gam") + scale_x_log10()
+```
+
+Notice the scientific notation used on the x-axis not we are using a log scale. Let's change to a sensible scale and use $ values (the unit of GDP per capita). 
+
+We will use the *scales* package's *dollar()* function. Rather than downloading the package, grab the function from it directly using the syntax *thepackage::thefunction*.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() + 
+  
+    geom_smooth(method = "gam") + 
+  
+    scale_x_log10(labels = scales::dollar)
+```
+
+We can reformat the text under the tick marks using other *labels* functions.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() + 
+  
+    geom_smooth(method = "gam") + 
+  
+    scale_x_log10(labels = scales::comma)
+```
+
+### Mapping aesthetics vs setting them
+
+An *aesthetic mapping* specifies that a variable will be expressed by one of the available visual elements, such as size, or colour, or shape.
+
+We map variables to aesthetics like this:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x =gdpPercap, y = lifeExp, color = continent))
+```
+
+This code does *not* give a direct instruction like "colour the points purple". Instead it says, "the property *color* will represent the variable *continent*" or "*color* will map *continent".
+
+Let's see what this looks like:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = continent))
+
+p + geom_point() + scale_x_log10(labels = scales::dollar)
+```
+
+Different colours are used to represent points with different *continent* properties.
+
+If we want to turn all the points in the figure purple, we do *not* do it throught the mapping function. Look at what happens when we try:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = "purple"))
+
+p + geom_point() + scale_x_log10(labels = scales::dollar)
+```
+
+What is going on?
+
+*mapping* wants to map the property *color* to a variable and assumes it will get a variable. We give it *"purple"*. So every row of data is assigned a categorical variable, *purple*, which has the value of *"purple"*. We have created a new column of data, every item of which is *"purple"*.
+
+*ggplot* maps this variable to the *color* aesthetic, using its default first colour of red.
+
+__The *aes()* function is for mapping only, not for setting a property value. If we want to set a property value, do it in the *geom_* function, outide the *mapping = aes(...)* step.__
+
+Let's try this. Set *geom_point()*'s *color* property to "purple:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point(color = "purple") + scale_x_log10(labels = scales::dollar)
+```
+
+We can change the look by giving different arguments to the *geom_* functions. *alpha* sets the transparency (0 fully transparent, 1 fully opaque). *se* is a boolean, which turns the standard error ribbon on and off.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point(alpha = 0.3) +
+  
+  geom_smooth(color = "orange", se = FALSE, size = 8, method = "lm") +
+  
+  scale_x_log10(labels = scales::dollar)
+```
+
+
+The *lab()* function controls the main *lab*els of the plot, as well as *title*, *subtitle* and *caption*.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point(alpha = 0.3) +
+  
+  geom_smooth(method = "gam") +
+  
+  scale_x_log10(labels = scales::dollar) +
+  
+  labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
+       
+       title = "Economic Growth and Life Expectancy",
+
+       subtitle = "Data points are country-years",
+       
+       caption = "Source: Gapminder.")
+```
+
+Let *color* map the continent:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
+                                            
+                                            color = continent))
+
+p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
+```
+
+We have five smoothing lines and standard error ribbons, one for each continent. This is a consequence of the way aesthetic mappings are inherited. *mapping = aes(...)* is set in the call to *ggplot* used to create the *p* object. *geom_point()* and *geom_smooth()* inherit from this.
+
+We can set the shading of this standard error ribbon to match its dominant colour, using the *fill* property. Whereas *color* affects the appearence of lines and points, *fill* is for the filled areas of bars, polygons and the interiors of the smoother's standard error ribbon.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
+                                            
+                                            color = continent, fill = continent))
+
+p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
+```
+
+
+### Aesthetics can be mapped per geom
+
+Perhaps five separate smoothers is too many, and we just want one line. But we would still like to have the points colour-coded by continent.
+
+By default,*geom*s inherit their mappings from the *ggplot()* function. We can change this by specifying different aesthetics for each *geom*. We use the same *mapping = aes(...)* expression, but in each *geom_* function as well. The *x* and *y* mappings are carried through to each *geom*, so that mapping can stay where it is.
+
+```{r}
+p <-  ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point(mapping = aes(color = continent)) +
+  
+    geom_smooth(method = "loess") +
+  
+    scale_x_log10()
+```
+
+It is possible to map continuous variables to the *color* aesthetic. We can map the log of each country-year's population, *pop*, to *color*. (We can take the log of population right in the *aes()* statement using the *log()* function). When we do this, *ggplot* produces a gradient scale.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point(mapping = aes(color = log(pop))) + scale_x_log10()
+```
+
+The gradient scale of the colour is continuous but is marked at intervals in the legend. Depending on the circumstances, mapping quantities like population to a continuous colour gradient may be more or less effective than cutting the variable into categorial bins.
+
+### Save your work
+
+We can set the default size of plots within our _.Rmd_ document. This command tells _R_ to make 8 x 5 figures:
+
+```{r}
+knitr::opts_chunk$set(fig.width = 8, fig.height = 5)
+```
+
+We can change the size of particular plots by placing the same options to any particular chunk inside the curly brackets at the beginning.
+
+A figure can be saved to a file using the *ggsave()* function. To save the most recently displayed figure, provide the name we want to save it under:
+
+```{r}
+ggsave(filename = "my_figure.png")
+```
+
+This will save the figure as a PNG file. If we want a PDF file instead, change the extension of the file:
+
+```{r}
+ggsave(filename = "my_figure.pdf")
+```
+
+We do not need to write *filename =* as long as the name of the file is the first argument in *ggsave()*. We can also pass plot objects to *ggsave()*. For example, we can put our most recent plot into an object called *p_out* and then tell *ggsave()* we want to save that object.
+
+```{r}
+p_out <-  p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
+
+ggsave("other_figure.pdf", plot = p_out)
+```
+
+When saving your work, it is useful to have one or more subfolders where you save only figures. You should also take care to name your saved figures in a sensible way: *fig_1.pdf* or *my_figure.pdf* are not good names.
+
+Create a folder named *figures*. Use the *here* library. *here()* outputs the file path. In this case *"C:/Users/Steven/Documents/Data Visualization - A Practical Introduction"*.
+
+```{r}
+here()
+```
+
+We can then us the *here()* function to make saving our work much easier. Assuming a folder named *figures* exists in the project folder, we can do this:
+
+```{r}
+ggsave(here("figures", "here_figure.pdf"), plot = p_out)
+```
+
+In general, you should save your work in several different formats and in different sizes. You can use *scale*, or set the *height* and *width* (and *units*) explicitly.
+
+```{r}
+ggsave(here("figures", "sized_figure.pdf"), plot = p_out,
+       
+       height = 8, width = 10, units = "in")
+```
+
+
+## Show the Right Numbers
+
+```{r}
+
+```
+
+## Graph Tables, Make Labels, Add Notes
+
+```{r}
+
+```
+
+## Work with Models
+
+```{r}
+
+```
+
+## Draw Maps
+
+```{r}
+
+```
+
+
+## Refine your Plots
+
+```{r}
+
+```
+
+
