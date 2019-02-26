@@ -316,6 +316,11 @@ We will use *geom_point()* to plot the x and y values as a scatterplot:
 p + geom_point()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_scatterplot.pdf"))
+```
+
+
 ### Build your plots layer by layer
 
 Plots are built up by *adding layers* one at a time. It really is an *additive* process.
@@ -328,6 +333,10 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 p + geom_smooth()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_smooth.pdf"))
+```
+
 This creates a smoothed line and adds a shaded ribbon showing the standard error of the line.
 
 If we want to see the data points and the line together, we simply *add geom_point()* back in.
@@ -338,6 +347,10 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 p + geom_point() + geom_smooth()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_smooth_and_scatterplot.pdf"))
+```
+
 Notice in the console message that *geom_smooth()* is using *method = gam* (for generalized additive model).
 
 We could instead use *method = lm* for a linear model.
@@ -346,6 +359,10 @@ We could instead use *method = lm* for a linear model.
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point() + geom_smooth(method = "lm")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_smooth_lm.pdf"))
 ```
 
 We haven't had to tell *geom_point()* or *geom_smooth()* where to get its data from. It *inherits* it from the *p* object.
@@ -360,6 +377,10 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 p + geom_point() + geom_smooth(method = "gam") + scale_x_log10()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_smooth_gam_log_scale.pdf"))
+```
+
 Notice the scientific notation used on the x-axis not we are using a log scale. Let's change to a sensible scale and use $ values (the unit of GDP per capita). 
 
 We will use the *scales* package's *dollar()* function. Rather than downloading the package, grab the function from it directly using the syntax *thepackage::thefunction*.
@@ -372,6 +393,10 @@ p + geom_point() +
     geom_smooth(method = "gam") + 
   
     scale_x_log10(labels = scales::dollar)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_dollar_scales.pdf"))
 ```
 
 We can reformat the text under the tick marks using other *labels* functions.
@@ -406,6 +431,10 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = 
 p + geom_point() + scale_x_log10(labels = scales::dollar)
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_color_continent.pdf"))
+```
+
 Different colours are used to represent points with different *continent* properties.
 
 If we want to turn all the points in the figure purple, we do *not* do it throught the mapping function. Look at what happens when we try:
@@ -414,6 +443,10 @@ If we want to turn all the points in the figure purple, we do *not* do it throug
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = "purple"))
 
 p + geom_point() + scale_x_log10(labels = scales::dollar)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_map_color_to_purple_in_aes.pdf"))
 ```
 
 What is going on?
@@ -432,6 +465,10 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 p + geom_point(color = "purple") + scale_x_log10(labels = scales::dollar)
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_set_color_to_purple_in_geom.pdf"))
+```
+
 We can change the look by giving different arguments to the *geom_* functions. *alpha* sets the transparency (0 fully transparent, 1 fully opaque). *se* is a boolean, which turns the standard error ribbon on and off.
 
 ```{r}
@@ -444,6 +481,9 @@ p + geom_point(alpha = 0.3) +
   scale_x_log10(labels = scales::dollar)
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_styles.pdf"))
+```
 
 The *lab()* function controls the main *lab*els of the plot, as well as *title*, *subtitle* and *caption*.
 
@@ -465,6 +505,10 @@ p + geom_point(alpha = 0.3) +
        caption = "Source: Gapminder.")
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_labels.pdf"))
+```
+
 Let *color* map the continent:
 
 ```{r}
@@ -473,6 +517,10 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
                                             color = continent))
 
 p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_color_line_each_continent.pdf"))
 ```
 
 We have five smoothing lines and standard error ribbons, one for each continent. This is a consequence of the way aesthetic mappings are inherited. *mapping = aes(...)* is set in the call to *ggplot* used to create the *p* object. *geom_point()* and *geom_smooth()* inherit from this.
@@ -487,6 +535,9 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
 p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_color_line_and_fill_each_continent.pdf"))
+```
 
 ### Aesthetics can be mapped per geom
 
@@ -504,12 +555,20 @@ p + geom_point(mapping = aes(color = continent)) +
     scale_x_log10()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_color_points_each_continent_one_line.pdf"))
+```
+
 It is possible to map continuous variables to the *color* aesthetic. We can map the log of each country-year's population, *pop*, to *color*. (We can take the log of population right in the *aes()* statement using the *log()* function). When we do this, *ggplot* produces a gradient scale.
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point(mapping = aes(color = log(pop))) + scale_x_log10()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_gradient_scale_color.pdf"))
 ```
 
 The gradient scale of the colour is continuous but is marked at intervals in the legend. Depending on the circumstances, mapping quantities like population to a continuous colour gradient may be more or less effective than cutting the variable into categorial bins.
