@@ -635,12 +635,20 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 p + geom_smooth() + geom_point()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_smooth_before_point.pdf"))
+```
+
 __...instead of after it?__
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point() + geom_smooth()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_point_before_smooth.pdf"))
 ```
 
 If *geom_smooth()* comes before *geom_point()*, then the smoothed curve is shown beneath the points and is obscured by it.
@@ -659,11 +667,17 @@ p <- ggplot(data = gapminder, mapping = aes(x = pop, y = lifeExp))
 p + geom_point()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_pop.pdf"))
+```
+
 Each point represents a country-year. The units of each point are taken from the dataframe, *lifeExp* is in years, *pop* is number of people.
 
 The majority of the points are bunched on the left, the countries having relatively low populations.
 
 There are then around 25 points further to the right, where *lifeExp* (starting from a low base) seems to increase with *pop*. This is the case of China, which starts with low life expectancy which then grows, along with its population.
+
+***
 
 __Try some alternative scale mappings. Besides *scale_x_log10()*, you can try *scale_x_sqrt()* and *scale_x_reverse()*. There are corresponding functions for y-axis transformations. Just write *y* instead of *x*.__
 
@@ -675,6 +689,10 @@ p + geom_point() +
   scale_x_sqrt() +
   
   labs(title = "scale_x_sqrt()")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_scale_x_sqrt.pdf"))
 ```
 
 The points are scaled as if each x value is square rooted. The lower values appear more stretched out, and larger values are compressed.
@@ -689,6 +707,10 @@ p + geom_point() +
   labs(title = "scale_y_sqrt()")
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_scale_y_sqrt.pdf"))
+```
+
 The points are scaled as if each y value is square rooted. The lower values appear more stretched out, and larger values are compressed.
 
 ```{r}
@@ -699,6 +721,10 @@ p + geom_point() +
   scale_x_reverse() +
   
   labs(title = "scale_x_reverse()")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_scale_x_reverse.pdf"))
 ```
 
 The x values are reversed, so points go right-to-left.
@@ -713,7 +739,13 @@ p + geom_point() +
   labs(title = "scale_y_reverse()")
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_scale_y_reverse.pdf"))
+```
+
 The y values are reversed, so points go up-to-down.
+
+***
 
 __What happens if you map *color* to *year* instead of *continent*?__
 
@@ -723,7 +755,13 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = 
 p + geom_point()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_color_year.pdf"))
+```
+
 The *year* variable is a number. Higher numbers (later years) are given a lighter colour than lower numbers (earlier years), as seen in the colour scale in the legend. Countries generally seem to have life expectancy and GDP per capita increasing as the years progress.
+
+***
 
 __Instead of mapping *color = year*, what happens if you try *color = factor(year)*?__
 
@@ -733,7 +771,13 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = 
 p + geom_point()
 ```
 
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_color_factor(year).pdf"))
+```
+
 *factor()* makes the *year* value categorical. Each year is a discrete category and gets its own colour.
+
+***
 
 __What might be a better visualization of our date, that does not ignore its temporal and country-level structure?__
 
@@ -755,6 +799,10 @@ p + geom_point(mapping = aes(color = country, alpha = year)) +
        caption = "Source: Gapminder.") +
   
   theme(legend.position = "none")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_better_visualization.pdf"))
 ```
 
 Each *country* is mapped to a *color* and the *year* is mapped to *alpha*, so later years are more opaque. I have removed the legend, due to their being so many countries, but you would need to see which colour represents each country.
