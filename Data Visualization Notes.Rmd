@@ -418,7 +418,7 @@ An *aesthetic mapping* specifies that a variable will be expressed by one of the
 We map variables to aesthetics like this:
 
 ```{r}
-p <- ggplot(data = gapminder, mapping = aes(x =gdpPercap, y = lifeExp, color = continent))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = continent))
 ```
 
 This code does *not* give a direct instruction like "colour the points purple". Instead it says, "the property *color* will represent the variable *continent*" or "*color* will map *continent".
@@ -625,6 +625,139 @@ ggsave(here("figures", "sized_figure.pdf"), plot = p_out,
        height = 8, width = 10, units = "in")
 ```
 
+### Where to Go Next
+
+__What happens when you put the *geom_smooth()* function before *geom_point()*...__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_smooth() + geom_point()
+```
+
+__...instead of after it?__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() + geom_smooth()
+```
+
+If *geom_smooth()* comes before *geom_point()*, then the smoothed curve is shown beneath the points and is obscured by it.
+
+If *geom_point()* comes before *geom_smooth()*, then the smoothed curve will be plotted over the points, obscuring them.
+
+Plots are built layer by layer, with the later layers being placed on top.
+
+***
+
+__Change the mappings in the *aes()* function so that you plot life expectancy against population (*pop*) rather than per capita GDP.__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = pop, y = lifeExp))
+
+p + geom_point()
+```
+
+Each point represents a country-year. The units of each point are taken from the dataframe, *lifeExp* is in years, *pop* is number of people.
+
+The majority of the points are bunched on the left, the countries having relatively low populations.
+
+There are then around 25 points further to the right, where *lifeExp* (starting from a low base) seems to increase with *pop*. This is the case of China, which starts with low life expectancy which then grows, along with its population.
+
+__Try some alternative scale mappings. Besides *scale_x_log10()*, you can try *scale_x_sqrt()* and *scale_x_reverse()*. There are corresponding functions for y-axis transformations. Just write *y* instead of *x*.__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() +
+  
+  scale_x_sqrt() +
+  
+  labs(title = "scale_x_sqrt()")
+```
+
+The points are scaled as if each x value is square rooted. The lower values appear more stretched out, and larger values are compressed.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() +
+  
+  scale_y_sqrt() +
+  
+  labs(title = "scale_y_sqrt()")
+```
+
+The points are scaled as if each y value is square rooted. The lower values appear more stretched out, and larger values are compressed.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() +
+  
+  scale_x_reverse() +
+  
+  labs(title = "scale_x_reverse()")
+```
+
+The x values are reversed, so points go right-to-left.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point() +
+  
+  scale_y_reverse() +
+  
+  labs(title = "scale_y_reverse()")
+```
+
+The y values are reversed, so points go up-to-down.
+
+__What happens if you map *color* to *year* instead of *continent*?__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = year))
+
+p + geom_point()
+```
+
+The *year* variable is a number. Higher numbers (later years) are given a lighter colour than lower numbers (earlier years), as seen in the colour scale in the legend. Countries generally seem to have life expectancy and GDP per capita increasing as the years progress.
+
+__Instead of mapping *color = year*, what happens if you try *color = factor(year)*?__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = factor(year)))
+
+p + geom_point()
+```
+
+*factor()* makes the *year* value categorical. Each year is a discrete category and gets its own colour.
+
+__What might be a better visualization of our date, that does not ignore its temporal and country-level structure?__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_point(mapping = aes(color = country, alpha = year)) +
+  
+  geom_smooth(method = "lm") +
+
+  scale_x_log10(labels = scales::dollar) +
+  
+  labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
+       
+       title = "Economic Growth and Life Expectancy",
+
+       subtitle = "Data points are country-years",
+       
+       caption = "Source: Gapminder.") +
+  
+  theme(legend.position = "none")
+```
+
+Each *country* is mapped to a *color* and the *year* is mapped to *alpha*, so later years are more opaque. I have removed the legend, due to their being so many countries, but you would need to see which colour represents each country.
 
 ## Show the Right Numbers
 
