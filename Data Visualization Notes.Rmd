@@ -418,21 +418,21 @@ An *aesthetic mapping* specifies that a variable will be expressed by one of the
 We map variables to aesthetics like this:
 
 ```{r}
-p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = continent))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, colour = continent))
 ```
 
-This code does *not* give a direct instruction like "colour the points purple". Instead it says, "the property *color* will represent the variable *continent*" or "*color* will map *continent".
+This code does *not* give a direct instruction like "colour the points purple". Instead it says, "the property *colour* will represent the variable *continent*" or "*colour* will map *continent".
 
 Let's see what this looks like:
 
 ```{r}
-p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = continent))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, colour = continent))
 
 p + geom_point() + scale_x_log10(labels = scales::dollar)
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_color_continent.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_colour_continent.pdf"))
 ```
 
 Different colours are used to represent points with different *continent* properties.
@@ -440,33 +440,33 @@ Different colours are used to represent points with different *continent* proper
 If we want to turn all the points in the figure purple, we do *not* do it throught the mapping function. Look at what happens when we try:
 
 ```{r}
-p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = "purple"))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, colour = "purple"))
 
 p + geom_point() + scale_x_log10(labels = scales::dollar)
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_map_color_to_purple_in_aes.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_map_colour_to_purple_in_aes.pdf"))
 ```
 
 What is going on?
 
-*mapping* wants to map the property *color* to a variable and assumes it will get a variable. We give it *"purple"*. So every row of data is assigned a categorical variable, *purple*, which has the value of *"purple"*. We have created a new column of data, every item of which is *"purple"*.
+*mapping* wants to map the property *colour* to a variable and assumes it will get a variable. We give it *"purple"*. So every row of data is assigned a categorical variable, *purple*, which has the value of *"purple"*. We have created a new column of data, every item of which is *"purple"*.
 
-*ggplot* maps this variable to the *color* aesthetic, using its default first colour of red.
+*ggplot* maps this variable to the *colour* aesthetic, using its default first colour of red.
 
 __The *aes()* function is for mapping only, not for setting a property value. If we want to set a property value, do it in the *geom_* function, outide the *mapping = aes(...)* step.__
 
-Let's try this. Set *geom_point()*'s *color* property to "purple:
+Let's try this. Set *geom_point()*'s *colour* property to "purple:
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
-p + geom_point(color = "purple") + scale_x_log10(labels = scales::dollar)
+p + geom_point(colour = "purple") + scale_x_log10(labels = scales::dollar)
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_set_color_to_purple_in_geom.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_set_colour_to_purple_in_geom.pdf"))
 ```
 
 We can change the look by giving different arguments to the *geom_* functions. *alpha* sets the transparency (0 fully transparent, 1 fully opaque). *se* is a boolean, which turns the standard error ribbon on and off.
@@ -476,7 +476,7 @@ p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point(alpha = 0.3) +
   
-  geom_smooth(color = "orange", se = FALSE, size = 8, method = "lm") +
+  geom_smooth(colour = "orange", se = FALSE, size = 8, method = "lm") +
   
   scale_x_log10(labels = scales::dollar)
 ```
@@ -509,34 +509,34 @@ p + geom_point(alpha = 0.3) +
 ggsave(here("figures", "lifeexp_vs_gdp_labels.pdf"))
 ```
 
-Let *color* map the continent:
+Let *colour* map the continent:
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
                                             
-                                            color = continent))
+                                            colour = continent))
 
 p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_color_line_each_continent.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_colour_line_each_continent.pdf"))
 ```
 
 We have five smoothing lines and standard error ribbons, one for each continent. This is a consequence of the way aesthetic mappings are inherited. *mapping = aes(...)* is set in the call to *ggplot* used to create the *p* object. *geom_point()* and *geom_smooth()* inherit from this.
 
-We can set the shading of this standard error ribbon to match its dominant colour, using the *fill* property. Whereas *color* affects the appearence of lines and points, *fill* is for the filled areas of bars, polygons and the interiors of the smoother's standard error ribbon.
+We can set the shading of this standard error ribbon to match its dominant colour, using the *fill* property. Whereas *colour* affects the appearence of lines and points, *fill* is for the filled areas of bars, polygons and the interiors of the smoother's standard error ribbon.
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
                                             
-                                            color = continent, fill = continent))
+                                            colour = continent, fill = continent))
 
 p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_color_line_and_fill_each_continent.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_colour_line_and_fill_each_continent.pdf"))
 ```
 
 ### Aesthetics can be mapped per geom
@@ -548,7 +548,7 @@ By default,*geom*s inherit their mappings from the *ggplot()* function. We can c
 ```{r}
 p <-  ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
-p + geom_point(mapping = aes(color = continent)) +
+p + geom_point(mapping = aes(colour = continent)) +
   
     geom_smooth(method = "loess") +
   
@@ -556,19 +556,19 @@ p + geom_point(mapping = aes(color = continent)) +
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_color_points_each_continent_one_line.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_colour_points_each_continent_one_line.pdf"))
 ```
 
-It is possible to map continuous variables to the *color* aesthetic. We can map the log of each country-year's population, *pop*, to *color*. (We can take the log of population right in the *aes()* statement using the *log()* function). When we do this, *ggplot* produces a gradient scale.
+It is possible to map continuous variables to the *colour* aesthetic. We can map the log of each country-year's population, *pop*, to *colour*. (We can take the log of population right in the *aes()* statement using the *log()* function). When we do this, *ggplot* produces a gradient scale.
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
-p + geom_point(mapping = aes(color = log(pop))) + scale_x_log10()
+p + geom_point(mapping = aes(colour = log(pop))) + scale_x_log10()
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_gradient_scale_color.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_gradient_scale_colour.pdf"))
 ```
 
 The gradient scale of the colour is continuous but is marked at intervals in the legend. Depending on the circumstances, mapping quantities like population to a continuous colour gradient may be more or less effective than cutting the variable into categorial bins.
@@ -747,32 +747,32 @@ The y values are reversed, so points go up-to-down.
 
 ***
 
-__What happens if you map *color* to *year* instead of *continent*?__
+__What happens if you map *colour* to *year* instead of *continent*?__
 
 ```{r}
-p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = year))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, colour = year))
 
 p + geom_point()
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_color_year.pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_colour_year.pdf"))
 ```
 
 The *year* variable is a number. Higher numbers (later years) are given a lighter colour than lower numbers (earlier years), as seen in the colour scale in the legend. Countries generally seem to have life expectancy and GDP per capita increasing as the years progress.
 
 ***
 
-__Instead of mapping *color = year*, what happens if you try *color = factor(year)*?__
+__Instead of mapping *colour = year*, what happens if you try *colour = factor(year)*?__
 
 ```{r}
-p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, color = factor(year)))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, colour = factor(year)))
 
 p + geom_point()
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "lifeexp_vs_gdp_color_factor(year).pdf"))
+ggsave(here("figures", "lifeexp_vs_gdp_colour_factor(year).pdf"))
 ```
 
 *factor()* makes the *year* value categorical. Each year is a discrete category and gets its own colour.
@@ -784,7 +784,7 @@ __What might be a better visualization of our date, that does not ignore its tem
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
-p + geom_point(mapping = aes(color = country, alpha = year)) +
+p + geom_point(mapping = aes(colour = country, alpha = year)) +
   
   geom_smooth(method = "lm") +
 
@@ -805,12 +805,158 @@ p + geom_point(mapping = aes(color = country, alpha = year)) +
 ggsave(here("figures", "lifeexp_vs_gdp_better_visualization.pdf"))
 ```
 
-Each *country* is mapped to a *color* and the *year* is mapped to *alpha*, so later years are more opaque. I have removed the legend, due to their being so many countries, but you would need to see which colour represents each country.
+Each *country* is mapped to a *colour* and the *year* is mapped to *alpha*, so later years are more opaque. I have removed the legend, due to their being so many countries, but you would need to see which colour represents each country.
 
 ## Show the Right Numbers
 
-```{r}
+### Grouped Data and the "Grouped" Aesthetic
 
+Beginning with the *gapminder* dataset, imagine we wanted to see how GDP per capita changes over time. Let's plot *year* and *gdpPercap* for each country-year:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = year, y = gdpPercap))
+
+p + geom_point()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "year_vs_gdp.pdf"))
+```
+
+Imagine we wanted to plot the trajectory of GDP per capita for each country by joining them with lines:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = year, y = gdpPercap))
+
+p + geom_line()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "year_vs_gdp_lines_wrong.pdf"))
+```
+
+This is not what we wanted. Points for each year have been joined, whereas we wanted points for each country to be joined.
+
+Use the *group* aesthetic to tell *ggplot* explicitly about the country-level structure:
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = year, y = gdpPercap))
+
+p + geom_line(aes(group = country))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "year_vs_gdp_lines_group_country.pdf"))
+```
+
+The lines now show the trajectory of GDP per capita of a country over time.
+
+__We have used the *group* aesthetic because the grouping we wanted (*country*) was not built into the variables being mapped (*year* and *gdpPercap*). There is no information in the *year* variable itself to let *ggplot* know that it is grouped by *country*.__
+
+### Facet to Make Small Multiples
+
+The previous plot is very messy. One option is to *facet* the data by some third variable, making a "small multiple" plot.
+
+A separate panel is drawn for each value of the faceting variable. Facets are not a *geom*, but a way of organising a series of *geom*s. In this case, we will use *facet_wrap()* to split the plot by *continent*. Pass *continent* as an argument with a ~.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = year, y = gdpPercap))
+
+p + geom_line(aes(group = country)) +
+  
+  facet_wrap(~continent)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "year_vs_gdp_lines_group_country_facet_continent.pdf"))
+```
+
+We can add a smoother and some cosmetic enhancements.
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = year, y = gdpPercap))
+
+p + geom_line(colour = "gray70", aes(group = country)) +
+  
+  geom_smooth(size = 1.1, method = "loess", se = FALSE) +
+  
+  scale_y_log10(labels=scales::dollar) +
+  
+  facet_wrap(~continent, ncol = 5) +
+  
+  labs(x = "Year",
+       
+       y = "GDP per capita",
+       
+       title = "GDP per capita on Five Continents")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "year_vs_gdp_country_by_continent.pdf"))
+```
+
+Data can be cross-classified by two categorical variables by using *facet_grid()*. We will use the *gss_sm* dataset, which is a small subset of the questions from the 2016 General Social Surbey. Unlike the *gapminder* dataset, it contains many categorical variables.
+
+We wish to make a smoothed scatterplot of the relationship between the age of the respondent (*age*) and the number of children they have (*childs*). We will facet this relationship by *sex* and *race*, using *facet_grid(sex ~ race)*:
+
+```{r}
+p <-  ggplot(data = gss_sm,
+             
+             mapping = aes(x = age, y = childs))
+
+p + geom_point(alpha = 0.2) +
+  
+  geom_smooth() +
+  
+  facet_grid(sex ~ race)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "age_vs_children_facet_grid().pdf"))
+```
+
+Further categorical variables can be added, such as *facet_grid(sex ~ race +degree)*, which will have a row for each *sex* variable and a column for each combination of *race* and *degree*.
+
+### Geoms Can Transform Data
+
+Whereas *geom_point()* just plots a point with given x and y coordinates, other *geom*s transform data before they are plotted (think of the smoother created by *geom_smooth()*).
+
+Every *geom_* function has an associated *stat_* function and vice versa.
+
+Sometimes the calculations done by the *stat_* functions are not immediately obvious. Consider *geom_bar()*:
+
+```{r}
+p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
+
+p + geom_bar()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "bigregion_barchart.pdf"))
+```
+
+The bar height gives the count of observations from each region of the USA. There is a y-axis variable, called *count*, that is not in the data but has been calculated for us. Behind the scenes, *geom_bar()* calls its default *stat_* function, *stat_count()*. The function computes two new variables, *count* and *prop* (short for proportion). If we want to use *prop* in our barchart, it must be used as a mapping. The relevant argument is *..prop..* (we need it to begin and end with two periods so that it won't be confused if there is already a *prop* variable in our data. __Use ..statistic..__
+
+```{r}
+p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
+
+p + geom_bar(mapping = aes(y = ..prop..))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "bigregion_barchart_prop_wrong.pdf"))
+```
+
+This is not what we want. The data is being grouped by the x-categories, whereas we want the whole data to be grouped, so each bar represents the proportion of the whole data. We do this using *group = 1* inside the aes() call (1 being a "dummy group" representing the whole dataset).
+
+```{r}
+p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
+
+p + geom_bar(mapping = aes(y = ..prop.., group = 1))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "bigregion_barchart_prop_group_1.pdf"))
 ```
 
 ## Graph Tables, Make Labels, Add Notes
