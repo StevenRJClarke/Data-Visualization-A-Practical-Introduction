@@ -1,7 +1,7 @@
 ---
 title: "Data Visualization Notes"
-author: "Kieran Healy"
-date: "2019-01-02"
+author: "Steven Clarke"
+date: "2019-02-19"
 output: html_document
 ---
 
@@ -138,7 +138,7 @@ my_summary
 table(my_numbers)
 ```
 
-#### vector * scalar**
+#### vector * scalar
 
 If we multiply a vector by a number, each element in that vector gets multiplied by that number.
 
@@ -146,7 +146,7 @@ If we multiply a vector by a number, each element in that vector gets multiplied
 my_numbers * 5
 ```
 
-#### vector + scalar**
+#### vector + scalar
 
 If we add a number to a vector, that number is added to each element in turn.
 
@@ -154,7 +154,7 @@ If we add a number to a vector, that number is added to each element in turn.
 my_numbers + 1
 ```
 
-#### vector + vector**
+#### vector + vector
 
 If we add vectors of the same length (such as adding a vector to itself), each element in one vector is added to the corresponding element in the other vector.
 
@@ -164,7 +164,7 @@ my_numbers + my_numbers
 
 ### If you're not sure what an object is, ask for its class
 
-Every object has a class.Use the *class()* function to find the class of an object.
+Every object has a class. Use the *class()* function to find the class of an object.
 
 ```{r}
 class(my_numbers)
@@ -222,7 +222,7 @@ Objects can be simple...
 str(my_numbers)
 ```
 
-...or obhect can be more complicated, although they are usually organized collections of simpler objects.
+...or objects can be more complicated, although they are usually organized collections of simpler objects.
 
 ```{r}
 str(my_summary)
@@ -246,9 +246,9 @@ ggplot(data = mpg, aes(x = displ, y = hwy))
 
 ### Get data into R
 
-Use he *read_csv()* function to read in comma-separated data.
+Use the *read_csv()* function to read in comma-separated data.
 
-Give the function an url and it will fetch the data. A messarge will be printed at the console, telling us that a class has been assigned to each column of the object it has created.
+Give the function an url and it will fetch the data. A message will be printed at the console, telling us that a class has been assigned to each column of the object it has created.
 
 ```{r}
 url <- "https://cdn.rawgit.com/kjhealy/viz-organdata/master/organdonation.csv"
@@ -369,7 +369,7 @@ We haven't had to tell *geom_point()* or *geom_smooth()* where to get its data f
 
 Looking at our data, it is all bunched up against the left hand side. The scale would look better if it was transformed from a linear scale to a log scale.
 
-*Add* the *scale_x_log10()* function to *p*:
+Add the *scale_x_log10()* function to *p*:
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
@@ -381,7 +381,7 @@ p + geom_point() + geom_smooth(method = "gam") + scale_x_log10()
 ggsave(here("figures", "lifeexp_vs_gdp_smooth_gam_log_scale.pdf"))
 ```
 
-Notice the scientific notation used on the x-axis not we are using a log scale. Let's change to a sensible scale and use $ values (the unit of GDP per capita).
+Notice the scientific notation used on the x-axis now we are using a log scale. Let's change to a sensible scale and use $ values (the unit of GDP per capita).
 
 We will use the *scales* package's *dollar()* function. Rather than downloading the package, grab the function from it directly using the syntax *thepackage::thefunction*.
 
@@ -421,7 +421,7 @@ We map variables to aesthetics like this:
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, colour = continent))
 ```
 
-This code does *not* give a direct instruction like "colour the points purple". Instead it says, "the property *colour* will represent the variable *continent*" or "*colour* will map *continent".
+This code does *not* give a direct instruction like "colour the points purple". Instead it says, "the property *colour* will represent the variable *continent*" or "*colour* will map *continent*".
 
 Let's see what this looks like:
 
@@ -437,7 +437,7 @@ ggsave(here("figures", "lifeexp_vs_gdp_colour_continent.pdf"))
 
 Different colours are used to represent points with different *continent* properties.
 
-If we want to turn all the points in the figure purple, we do *not* do it throught the mapping function. Look at what happens when we try:
+If we want to turn all the points in the figure purple, we do *not* do it through the mapping function. Look at what happens when we try:
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp, colour = "purple"))
@@ -543,7 +543,7 @@ ggsave(here("figures", "lifeexp_vs_gdp_colour_line_and_fill_each_continent.pdf")
 
 Perhaps five separate smoothers is too many, and we just want one line. But we would still like to have the points colour-coded by continent.
 
-By default,*geom*s inherit their mappings from the *ggplot()* function. We can change this by specifying different aesthetics for each *geom*. We use the same *mapping = aes(...)* expression, but in each *geom_* function as well. The *x* and *y* mappings are carried through to each *geom*, so that mapping can stay where it is.
+By default, *geom*s inherit their mappings from the *ggplot()* function. We will map *x* and *y* in the *ggplot()* function as usual, which will be inherited by the *geom_* functions. We will then use *mapping = aes(colour = continent)* __only__ in *geom_point()*. This ensures that the points are colour-coded by continent, but *geom_smooth()* will only plot one line, as it does not map *continent* in any way.
 
 ```{r}
 p <-  ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
@@ -779,7 +779,7 @@ ggsave(here("figures", "lifeexp_vs_gdp_colour_factor(year).pdf"))
 
 ***
 
-__What might be a better visualization of our date, that does not ignore its temporal and country-level structure?__
+__What might be a better visualization of our data, that does not ignore its temporal and country-level structure?__
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
@@ -805,7 +805,7 @@ p + geom_point(mapping = aes(colour = country, alpha = year)) +
 ggsave(here("figures", "lifeexp_vs_gdp_better_visualization.pdf"))
 ```
 
-Each *country* is mapped to a *colour* and the *year* is mapped to *alpha*, so later years are more opaque. I have removed the legend, due to their being so many countries, but you would need to see which colour represents each country.
+Each *country* is mapped to a *colour* and the *year* is mapped to *alpha*, so later years are more opaque. I have removed the legend, due to there being so many countries, but you would need to see which colour represents each country.
 
 ## Show the Right Numbers
 
@@ -895,7 +895,7 @@ p + geom_line(colour = "gray70", aes(group = country)) +
 ggsave(here("figures", "year_vs_gdp_country_by_continent.pdf"))
 ```
 
-Data can be cross-classified by two categorical variables by using *facet_grid()*. We will use the *gss_sm* dataset, which is a small subset of the questions from the 2016 General Social Surbey. Unlike the *gapminder* dataset, it contains many categorical variables.
+Data can be cross-classified by two categorical variables by using *facet_grid()*. We will use the *gss_sm* dataset, which is a small subset of the questions from the 2016 General Social Survey. Unlike the *gapminder* dataset, it contains many categorical variables.
 
 We wish to make a smoothed scatterplot of the relationship between the age of the respondent (*age*) and the number of children they have (*childs*). We will facet this relationship by *sex* and *race*, using *facet_grid(sex ~ race)*:
 
@@ -935,7 +935,7 @@ p + geom_bar()
 ggsave(here("figures", "bigregion_barchart.pdf"))
 ```
 
-The bar height gives the count of observations from each region of the USA. There is a y-axis variable, called *count*, that is not in the data but has been calculated for us. Behind the scenes, *geom_bar()* calls its default *stat_* function, *stat_count()*. The function computes two new variables, *count* and *prop* (short for proportion). If we want to use *prop* in our bar chart, it must be used as a mapping. The relevant argument is *..prop..* (we need it to begin and end with two periods so that it won't be confused if there is already a *prop* variable in our data. __Use ..statistic..__
+The bar height gives the count of observations from each region of the USA. There is a y-axis variable, called *count*, that is not in the data but has been calculated for us. Behind the scenes, *geom_bar()* calls its default *stat_* function, *stat_count()*. The function computes two new variables, *count* and *prop* (short for proportion). If we want to use *prop* in our bar chart, it must be used as a mapping. The relevant argument is *..prop..* (we need it to begin and end with two periods so that it won't be confused if there is already a *prop* variable in our data. __Use *mapping = aes(variable =* ..statistic..*)*__
 
 ```{r}
 p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
@@ -1029,7 +1029,7 @@ p + geom_bar(position = "dodge", mapping = aes(y = ..prop..))
 ggsave(here("figures", "religion_by_bigregion_using_position_dodge_y_prop_barchart.pdf"))
 ```
 
-...but this is not useful. The problem is we are seeing the proportion of Protestants that are Protestant (and Catholics are Catholic etc) in each region, which is 100% in each case. Previously we fixed this using the *group* argument. If we set *group = religion*...
+...but this is not useful. The problem is we are seeing the proportion of Protestants that are Protestant (and Catholics are Catholic etc.) in each region, which is 100% in each case. Previously we fixed this using the *group* argument. If we set *group = religion*...
 
 ```{r}
 p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
@@ -1169,7 +1169,6 @@ p + geom_density(alpha = 0.3, mapping = aes(y = ..count..))
 ggsave(here("figures", "midwest_county_density_count.pdf"))
 ```
 
-
 ### Avoid Transformations When Necessary
 
 Sometimes data will already have counts or proportions in them...
@@ -1192,13 +1191,13 @@ ggsave(here("figures", "titanic_stat_identity.pdf"))
 
 *geom_col()* has the same effect as using *geom_bar(stat = "identity")*.
 
-We can also use *position = "identity"* to plot the values as given. This lets us plot a flow of positive and negative values in a bar chart. This is useful when looking at changes to some threshold level or baseline. The *oecd_sum* table in *socviz* contains information on average life expectancy at birth within the USA and other OECD countries.
+We can also use *position = "identity"* to plot the values as given. This lets us plot a flow of positive and negative values in a bar chart. This is useful when looking at changes relative to some threshold level or baseline. The *oecd_sum* table in *socviz* contains information on average life expectancy at birth within the USA and other OECD countries.
 
 ```{r}
 oecd_sum
 ```
 
-The *other* column is the average life expectancy in a given year for countries *excluding* the United States. The *usa* column is the U.S. life expectancy. *diff* is the difference between the two values, and *hi_lo* indicates whether the U.S. value is higher or lower than the OECD average.
+The *other* column is the average life expectancy in a given year for countries *excluding* the United States. The *usa* column is the U.S. life expectancy. *diff* is the difference between the two values and *hi_lo* indicates whether the U.S. value is higher or lower than the OECD average.
 
 We will plot the difference over time and use the *hi_lo* variable to colour the columns in the chart.
 
