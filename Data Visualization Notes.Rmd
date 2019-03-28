@@ -4,7 +4,7 @@ author: "Kieran Healy"
 date: "2019-01-02"
 output: html_document
 ---
-   
+
 ## Data Visualization Notes
 
 This is a starter RMarkdown template to accompany *Data Visualization* (Princeton University Press, 2019). You can use it to take notes, write your code, and produce a good-looking, reproducible document that records the work you have done. At the very top of the file is a section of *metadata*, or information about what the file is and what it does. The metadata is delimited by three dashes at the start and another three at the end. You should change the title, author, and date to the values that suit you. Keep the `output` line as it is for now, however. Each line in the metadata has a structure. First the *key* ("title", "author", etc), then a colon, and then the *value* associated with the key.  
@@ -20,7 +20,7 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```
 
-Code chunks are delimited by three backticks (found to the left of the 1 key on US and UK keyboards) at the start and end. The opening backticks also have a pair of braces and the letter `r`, to indicate what language the chunk is written in. You write your code inside the code chunks. Write your notes and other material around them, as here. 
+Code chunks are delimited by three backticks (found to the left of the 1 key on US and UK keyboards) at the start and end. The opening backticks also have a pair of braces and the letter `r`, to indicate what language the chunk is written in. You write your code inside the code chunks. Write your notes and other material around them, as here.
 
 ## Before you Begin
 
@@ -58,7 +58,7 @@ To begin we must load some libraries we will be using. If we do not load them, R
 ## By defult, show code for all chunks in the knitted document,
 ## as well as the output. To override for a particular chunk
 ## use echo = FALSE in its options.
-knitr::opts_chunk$set(echo = TRUE) 
+knitr::opts_chunk$set(echo = TRUE)
 
 ## Set the default size of figures
 knitr::opts_chunk$set(fig.width=8, fig.height=5)  
@@ -71,7 +71,7 @@ library(tidyverse)
 
 ```
 
-Notice that here, the braces at the start of the code chunk have some additional options set in them. There is the language, `r`, as before. This is required. Then there is the word `setup`, which is a label for your code chunk. Labels are useful to briefly say what the chunk does. Label names must be unique (no two chunks in the same document can have the same label) and cannot contain spaces. Then, after the comma, an option is set: `include=FALSE`. This tells R to run this code but not to include the output in the final document. 
+Notice that here, the braces at the start of the code chunk have some additional options set in them. There is the language, `r`, as before. This is required. Then there is the word `setup`, which is a label for your code chunk. Labels are useful to briefly say what the chunk does. Label names must be unique (no two chunks in the same document can have the same label) and cannot contain spaces. Then, after the comma, an option is set: `include=FALSE`. This tells R to run this code but not to include the output in the final document.
 
 
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
@@ -258,7 +258,7 @@ organs <-  read_csv(file = url)
 
 ### Make your first figure
 
-Let us make a scatterplot of the *gapminder* data. 
+Let us make a scatterplot of the *gapminder* data.
 
 Let's take a look at the data first.
 
@@ -280,7 +280,7 @@ At the end of *Chapter 2*, we plotted a graph using *ggplot*. The steps are alwa
 
 **Data**
 
-First we tell *ggplot* what **data** we are using, using the *data* argument: 
+First we tell *ggplot* what **data** we are using, using the *data* argument:
 
 ```{r eval = FALSE}
 p <-  ggplot(data = gapminder)
@@ -288,13 +288,13 @@ p <-  ggplot(data = gapminder)
 
 **Aesthetic mappings**
 
-Second, we tell *ggplot* which variables in the data should be **mapped** to visual elements in the plot, using the *mapping* argument. 
+Second, we tell *ggplot* which variables in the data should be **mapped** to visual elements in the plot, using the *mapping* argument.
 
 It is passed the *aes()* function (for *aes*thetics).
 
 ```{r}
-p <- ggplot(data = gapminder, 
-            
+p <- ggplot(data = gapminder,
+
             mapping = aes(x = gdpPercap, y = lifeExp))
 ```
 
@@ -381,17 +381,17 @@ p + geom_point() + geom_smooth(method = "gam") + scale_x_log10()
 ggsave(here("figures", "lifeexp_vs_gdp_smooth_gam_log_scale.pdf"))
 ```
 
-Notice the scientific notation used on the x-axis not we are using a log scale. Let's change to a sensible scale and use $ values (the unit of GDP per capita). 
+Notice the scientific notation used on the x-axis not we are using a log scale. Let's change to a sensible scale and use $ values (the unit of GDP per capita).
 
 We will use the *scales* package's *dollar()* function. Rather than downloading the package, grab the function from it directly using the syntax *thepackage::thefunction*.
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
-p + geom_point() + 
-  
-    geom_smooth(method = "gam") + 
-  
+p + geom_point() +
+
+    geom_smooth(method = "gam") +
+
     scale_x_log10(labels = scales::dollar)
 ```
 
@@ -404,10 +404,10 @@ We can reformat the text under the tick marks using other *labels* functions.
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
-p + geom_point() + 
-  
-    geom_smooth(method = "gam") + 
-  
+p + geom_point() +
+
+    geom_smooth(method = "gam") +
+
     scale_x_log10(labels = scales::comma)
 ```
 
@@ -475,9 +475,9 @@ We can change the look by giving different arguments to the *geom_* functions. *
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point(alpha = 0.3) +
-  
+
   geom_smooth(colour = "orange", se = FALSE, size = 8, method = "lm") +
-  
+
   scale_x_log10(labels = scales::dollar)
 ```
 
@@ -491,17 +491,17 @@ The *lab()* function controls the main *lab*els of the plot, as well as *title*,
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point(alpha = 0.3) +
-  
+
   geom_smooth(method = "gam") +
-  
+
   scale_x_log10(labels = scales::dollar) +
-  
+
   labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
-       
+
        title = "Economic Growth and Life Expectancy",
 
        subtitle = "Data points are country-years",
-       
+
        caption = "Source: Gapminder.")
 ```
 
@@ -513,7 +513,7 @@ Let *colour* map the continent:
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
-                                            
+
                                             colour = continent))
 
 p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
@@ -529,7 +529,7 @@ We can set the shading of this standard error ribbon to match its dominant colou
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
-                                            
+
                                             colour = continent, fill = continent))
 
 p + geom_point() + geom_smooth(method = "loess") + scale_x_log10()
@@ -549,9 +549,9 @@ By default,*geom*s inherit their mappings from the *ggplot()* function. We can c
 p <-  ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point(mapping = aes(colour = continent)) +
-  
+
     geom_smooth(method = "loess") +
-  
+
     scale_x_log10()
 ```
 
@@ -621,7 +621,7 @@ In general, you should save your work in several different formats and in differ
 
 ```{r}
 ggsave(here("figures", "sized_figure.pdf"), plot = p_out,
-       
+
        height = 8, width = 10, units = "in")
 ```
 
@@ -685,9 +685,9 @@ __Try some alternative scale mappings. Besides *scale_x_log10()*, you can try *s
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point() +
-  
+
   scale_x_sqrt() +
-  
+
   labs(title = "scale_x_sqrt()")
 ```
 
@@ -701,9 +701,9 @@ The points are scaled as if each x value is square rooted. The lower values appe
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point() +
-  
+
   scale_y_sqrt() +
-  
+
   labs(title = "scale_y_sqrt()")
 ```
 
@@ -717,9 +717,9 @@ The points are scaled as if each y value is square rooted. The lower values appe
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point() +
-  
+
   scale_x_reverse() +
-  
+
   labs(title = "scale_x_reverse()")
 ```
 
@@ -733,9 +733,9 @@ The x values are reversed, so points go right-to-left.
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point() +
-  
+
   scale_y_reverse() +
-  
+
   labs(title = "scale_y_reverse()")
 ```
 
@@ -785,19 +785,19 @@ __What might be a better visualization of our date, that does not ignore its tem
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point(mapping = aes(colour = country, alpha = year)) +
-  
+
   geom_smooth(method = "lm") +
 
   scale_x_log10(labels = scales::dollar) +
-  
+
   labs(x = "GDP Per Capita", y = "Life Expectancy in Years",
-       
+
        title = "Economic Growth and Life Expectancy",
 
        subtitle = "Data points are country-years",
-       
+
        caption = "Source: Gapminder.") +
-  
+
   theme(legend.position = "none")
 ```
 
@@ -863,7 +863,7 @@ A separate panel is drawn for each value of the faceting variable. Facets are no
 p <- ggplot(data = gapminder, mapping = aes(x = year, y = gdpPercap))
 
 p + geom_line(aes(group = country)) +
-  
+
   facet_wrap(~continent)
 ```
 
@@ -877,17 +877,17 @@ We can add a smoother and some cosmetic enhancements.
 p <- ggplot(data = gapminder, mapping = aes(x = year, y = gdpPercap))
 
 p + geom_line(colour = "gray70", aes(group = country)) +
-  
+
   geom_smooth(size = 1.1, method = "loess", se = FALSE) +
-  
+
   scale_y_log10(labels=scales::dollar) +
-  
+
   facet_wrap(~continent, ncol = 5) +
-  
+
   labs(x = "Year",
-       
+
        y = "GDP per capita",
-       
+
        title = "GDP per capita on Five Continents")
 ```
 
@@ -901,13 +901,13 @@ We wish to make a smoothed scatterplot of the relationship between the age of th
 
 ```{r}
 p <-  ggplot(data = gss_sm,
-             
+
              mapping = aes(x = age, y = childs))
 
 p + geom_point(alpha = 0.2) +
-  
+
   geom_smooth() +
-  
+
   facet_grid(sex ~ race)
 ```
 
@@ -915,7 +915,7 @@ p + geom_point(alpha = 0.2) +
 ggsave(here("figures", "age_vs_children_facet_grid().pdf"))
 ```
 
-Further categorical variables can be added, such as *facet_grid(sex ~ race +degree)*, which will have a row for each *sex* variable and a column for each combination of *race* and *degree*.
+Further categorical variables can be added, such as *facet_grid(sex ~ race + degree)*, which will have a row for each *sex* variable and a column for each combination of *race* and *degree*.
 
 ### Geoms Can Transform Data
 
@@ -935,7 +935,7 @@ p + geom_bar()
 ggsave(here("figures", "bigregion_barchart.pdf"))
 ```
 
-The bar height gives the count of observations from each region of the USA. There is a y-axis variable, called *count*, that is not in the data but has been calculated for us. Behind the scenes, *geom_bar()* calls its default *stat_* function, *stat_count()*. The function computes two new variables, *count* and *prop* (short for proportion). If we want to use *prop* in our barchart, it must be used as a mapping. The relevant argument is *..prop..* (we need it to begin and end with two periods so that it won't be confused if there is already a *prop* variable in our data. __Use ..statistic..__
+The bar height gives the count of observations from each region of the USA. There is a y-axis variable, called *count*, that is not in the data but has been calculated for us. Behind the scenes, *geom_bar()* calls its default *stat_* function, *stat_count()*. The function computes two new variables, *count* and *prop* (short for proportion). If we want to use *prop* in our bar chart, it must be used as a mapping. The relevant argument is *..prop..* (we need it to begin and end with two periods so that it won't be confused if there is already a *prop* variable in our data. __Use ..statistic..__
 
 ```{r}
 p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
@@ -957,6 +957,264 @@ p + geom_bar(mapping = aes(y = ..prop.., group = 1))
 
 ```{r include = FALSE}
 ggsave(here("figures", "bigregion_barchart_prop_group_1.pdf"))
+```
+
+The *gss_sm* data contains a *religion* variable. Let's graph this as a bar chart, with a colour for each religion:
+
+```{r}
+p <- ggplot(data = gss_sm, mapping = aes(x = religion, fill = religion))
+
+p + geom_bar() + guides(fill = FALSE)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_barchart.pdf"))
+```
+
+Both *x* and *fill* are mapped to *religion*. Because we do not need a legend showing which colour represents each religion (we can read that from the x-axis), we turn off the legend using *guides(fill = FALSE)*.
+
+### Frequency Plots the Slightly Awkward Way
+
+A more appropriate use of the *fill* aesthetic with *geom_bar()* is to cross-classify two categorical variables. For example, to examine the distribution of religious preferences within different regions of the United States. (__Note:__ This is not the most straightforward way of producing these bar charts. We will see a better way in the next chapter, where we calculate a table first).
+
+Let's look at the breakdown of religion by region; that is, we want the *religion* variable broken down proportionally within *bigregion*. Map *fill* to *religion*:
+
+```{r}
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
+
+p + geom_bar()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_bigregion_barchart.pdf"))
+```
+
+This is a stacked bar chart, where the counts of each religion are stacked within each bar. A problem with this is that each religion is unaligned and so it is hard to compare the heights.
+
+An alternative is to set the *position* argument to "fill" in the *geom_* function:
+
+```{r}
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
+
+p + geom_bar(position = "fill")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_bigregion_using_position_fill_barchart.pdf"))
+```
+
+This makes it easier to compare the proportion of each religion in a region, but we lose the relative sizes of the regions.
+
+We could also set *position = "dodge"* to place the religions side by side in each region...
+
+```{r}
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
+
+p + geom_bar(position = "dodge")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_bigregion_using_position_dodge_barchart.pdf"))
+```
+
+...but this shows counts, not proportions. We have already seen that using *y = ..prop..* can be used to use proportions...
+
+```{r}
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
+
+p + geom_bar(position = "dodge", mapping = aes(y = ..prop..))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_bigregion_using_position_dodge_y_prop_barchart.pdf"))
+```
+
+...but this is not useful. The problem is we are seeing the proportion of Protestants that are Protestant (and Catholics are Catholic etc) in each region, which is 100% in each case. Previously we fixed this using the *group* argument. If we set *group = religion*...
+
+```{r}
+p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
+
+p + geom_bar(position = "dodge", mapping = aes(y = ..prop.., group = religion))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_bigregion_using_position_dodge_y_prop_group_religion_barchart.pdf"))
+```
+
+...then we see what proportion of Protestants live in each region (and Catholics etc). So we see that nearly half of all Protestants live in the South. The bars for each religion sum to one across the regions, but the bars do not sum to one in each region.
+
+The easiest thing to do is to stop trying to force *geom_point()* to do all the work in a single step. Instead, we ask *ggplot* to give us a proportional bar chart of religious affiliation, and then facet that by region.
+
+```{r}
+p <- ggplot(data = gss_sm, mapping = aes(x = religion))
+
+p + geom_bar(mapping = aes(y = ..prop.., group = bigregion)) + facet_wrap(~bigregion)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_bigregion_using_facet_wrap.pdf"))
+```
+
+Note: in this case we group by *bigregion*, not *religion*. Otherwise we will just find that 100% of Protestants in a region are Protestant.
+
+### Histograms and Density Plots
+
+A histogram is a way of summarizing a continuous variable by chopping it up into segments or "bins" and counting how many observations are found within each bin. We have to decide how finely to bin the data.
+
+The *midwest* dataset contains information on counties in several midwestern states of the United States. Counties vary in size, so we can make a histogram showing the distribution of their geographical areas (measured in square miles).
+
+We need to divide the observations in to bins. *geom_histogram()* will choose a bin size for us based on a rule of thumb. The histogram displays a count of observations in each bin.
+
+```{r}
+p <- ggplot(data = midwest, mapping = aes(x = area))
+
+p + geom_histogram()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_area_histogram_default_bins.pdf"))
+```
+
+We can set the number of bins using *bins*, or the width of each bin using *binwidth*:
+
+```{r}
+p <- ggplot(data = midwest, mapping = aes(x = area))
+
+p + geom_histogram(bins = 10)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_area_histogram_10_bins.pdf"))
+```
+
+As with bar charts, a newly created *count* variable is created and displayed.
+
+We can display multiple histograms in one plot. Let's *subset* our data so we only look at counties in two states: Ohio "OH" and Wisconsin "WI", giving them different fills.
+
+```{r}
+oh_wi <- c("OH", "WI")
+
+p <- ggplot(data = subset(midwest, subset = state %in% oh_wi), mapping = aes(x = percollege, fill = state))
+
+p + geom_histogram(alpha = 0.4, bins = 20)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_percent_college_histogram_OH_and_WI.pdf"))
+```
+
+An alternative to a histogram is to calculate a kernel density estimate of the underlying distribution. The *geom_density()* function will do this:
+
+```{r}
+p <-  ggplot(data = midwest, mapping = aes(x = area))
+
+p + geom_density()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_area_density.pdf"))
+```
+
+A similar plot can be achieved using *geom_line(stat = "density")*, which removes the lines at the sides and bottom of the area (and doesn't allow a fill):
+
+```{r}
+p <-  ggplot(data = midwest, mapping = aes(x = area))
+
+p + geom_line(stat = "density")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_area_line_density.pdf"))
+```
+
+We can use *colour* and *fill* for *geom_density()* too. We could map each state to a different colour and fill, allowing us to see them in one plot.
+
+```{r}
+p <- ggplot(data = midwest, mapping = aes(x = area, colour = state, fill = state))
+
+p + geom_density(alpha = 0.3)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_area_colour_and_fill_for_each_state.pdf"))
+```
+
+When using *geom_bar()*, we saw we could use the *..prop..* statistic for a proportional measure, instead of the *..count..* statistic. We can do something similar with *geom_histogram()* and *geom_density()* using their *stat_* functions.
+
+From *geom_density()*, the *stat_density()* function can return its default *..density..* statistic, or *..scaled..*, which will give a proportional density estimate.
+
+```{r}
+p <- ggplot(data = subset(midwest, subset = state %in% oh_wi),
+
+            mapping = aes(x = area, fill = state, colour = state))
+
+p + geom_density(alpha = 0.3, mapping = aes(y = ..scaled..))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_density_scaled.pdf"))
+```
+
+It can also return a statistic called *..count..*, which is the density times the number of points. This can be used in stacked density plots.
+
+```{r}
+p <- ggplot(data = subset(midwest, subset = state %in% oh_wi),
+
+            mapping = aes(x = area, fill = state, colour = state))
+
+p + geom_density(alpha = 0.3, mapping = aes(y = ..count..))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_density_count.pdf"))
+```
+
+
+### Avoid Transformations When Necessary
+
+Sometimes data will already have counts or proportions in them...
+
+```{r}
+titanic
+```
+
+...so we do not need a *stat_* function to calculate these things for us. Use *stat = "identity"* in the *geom_* function. (We'll also move the legend to the top of the plot):
+
+```{r}
+p <- ggplot(data = titanic, mapping = aes(x = fate, y = percent, fill = sex))
+
+p + geom_bar(position = "dodge", stat = "identity") + theme(legend.position = "top")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "titanic_stat_identity.pdf"))
+```
+
+*geom_col()* has the same effect as using *geom_bar(stat = "identity")*.
+
+We can also use *position = "identity"* to plot the values as given. This lets us plot a flow of positive and negative values in a bar chart. This is useful when looking at changes to some threshold level or baseline. The *oecd_sum* table in *socviz* contains information on average life expectancy at birth within the USA and other OECD countries.
+
+```{r}
+oecd_sum
+```
+
+The *other* column is the average life expectancy in a given year for countries *excluding* the United States. The *usa* column is the U.S. life expectancy. *diff* is the difference between the two values, and *hi_lo* indicates whether the U.S. value is higher or lower than the OECD average.
+
+We will plot the difference over time and use the *hi_lo* variable to colour the columns in the chart.
+
+```{r}
+p <- ggplot(data = oecd_sum, mapping = aes(x = year, y = diff, fill = hi_lo))
+
+p + geom_col() + guides(fill = FALSE) +
+
+  labs(x = NULL, y = "Difference in Years",
+       title = "The US Life Expectancy Gap",
+       subtitle = "Difference between US and OECD average life expectancies, 1960-2015",
+       caption = "Data: OECD. After a chart by Christopher Ingraham, Washington Post, December 27th 2017.")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "difference_between_US_and_other_OECD_countries_average_life_expectancies.pdf"))
 ```
 
 ## Graph Tables, Make Labels, Add Notes
@@ -983,5 +1241,3 @@ ggsave(here("figures", "bigregion_barchart_prop_group_1.pdf"))
 ```{r}
 
 ```
-
-
