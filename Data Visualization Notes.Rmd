@@ -1139,7 +1139,7 @@ p + geom_density(alpha = 0.3)
 ggsave(here("figures", "midwest_county_area_colour_and_fill_for_each_state.pdf"))
 ```
 
-When using *geom_bar()*, we saw we could use the *..prop..* statistic for a proportional measure, instead of the *..count..* statistic. We can do something similar with *geom_histogram()* and *geom_density()* using their *stat_* functions.
+When using *geom_bar()*, we saw we could use the *..prop..* statistic for a proportional measure instead of the *..count..* statistic. We can do something similar with *geom_histogram()* and *geom_density()* using their *stat_* functions.
 
 From *geom_density()*, the *stat_density()* function can return its default *..density..* statistic, or *..scaled..*, which will give a proportional density estimate.
 
@@ -1182,7 +1182,9 @@ titanic
 ```{r}
 p <- ggplot(data = titanic, mapping = aes(x = fate, y = percent, fill = sex))
 
-p + geom_bar(position = "dodge", stat = "identity") + theme(legend.position = "top")
+p + geom_bar(position = "dodge",
+             
+             stat = "identity") + theme(legend.position = "top")
 ```
 
 ```{r include = FALSE}
@@ -1207,13 +1209,178 @@ p <- ggplot(data = oecd_sum, mapping = aes(x = year, y = diff, fill = hi_lo))
 p + geom_col() + guides(fill = FALSE) +
 
   labs(x = NULL, y = "Difference in Years",
+       
        title = "The US Life Expectancy Gap",
+       
        subtitle = "Difference between US and OECD average life expectancies, 1960-2015",
+       
        caption = "Data: OECD. After a chart by Christopher Ingraham, Washington Post, December 27th 2017.")
 ```
 
 ```{r include = FALSE}
 ggsave(here("figures", "difference_between_US_and_other_OECD_countries_average_life_expectancies.pdf"))
+```
+
+### Where to Go Next
+
+__Revisit the *gapminder* plots at the beginning of the chapter and experiment with different ways to facet the data.__
+
+__Try plotting population and per capita GDP while faceting on year__
+
+```{r}
+p <-  ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
+
+p + geom_point(colour = "gray70") + geom_smooth(se = FALSE) + facet_wrap(~year)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "gdp_vs_pop_facet_year.pdf"))
+```
+
+__Try plotting population and per capita GDP while faceting on country__
+
+```{r fig.width=25, fig.height=25}
+p <-  ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
+
+p + geom_point(colour = "gray70") + geom_smooth(se = FALSE) + facet_wrap(~country)
+```
+
+***
+
+__Investigate the difference between a formula written as *facet_grid(sex ~ race)* and one written as *facet_grid(~ sex + race)*.__
+
+If we use *facet_grid(sex ~ race)*...
+
+```{r}
+p <-  ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
+
+p + geom_point(alpha = 0.2) + geom_smooth() + facet_grid(sex ~ race)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "facet_grid(sex_~_race).pdf"))
+```
+
+...the facets break out the data into sex (rows) and race (columns).
+
+If we use *facet_grid(~ sex + race)*...
+
+```{r}
+p <-  ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
+
+p + geom_point(alpha = 0.2) + geom_smooth() + facet_grid(~ sex + race)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "facet_grid(~_sex_+_race).pdf"))
+```
+
+...the facets break out the data for each combination of sex and race.
+
+***
+
+__Experiment to see what happens when you use *facet_wrap()* with more complex formulas like *facet_wrap(~ sex + race)* instead of *facet_grid()*.__
+
+```{r}
+p <-  ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
+
+p + geom_point(alpha = 0.2) + geom_smooth() + facet_wrap(~ sex + race)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "facet_wrap(~_sex_+_race).pdf"))
+```
+
+*facet_wrap()* breaks out the data for each combination of sex and race (as does *facet_grid()*) but lays out the results in a wrapped 1D table rather than a fully cross-classified grid.
+
+***
+
+__Frequency polygons are closely related to histograms. Instead of displaying the count of observations using bars, they display it with a series of connected lines. Try the various *geom_histogram()* calls in this chapter using *geom_freqpoly()* instead.__
+
+__Default *geom_freqpoly()*__
+
+```{r}
+p <-  ggplot(data = midwest, mapping = aes(x = area))
+
+p + geom_freqpoly()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_count_area_freqpoly_default_bins.pdf"))
+```
+
+__Define the Number of Bins__
+
+We can still define bins and binwidth...
+
+```{r}
+p <-  ggplot(data = midwest, mapping = aes(x = area))
+
+p + geom_freqpoly(bins = 10)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_count_area_freqpoly_10_bins.pdf"))
+```
+
+__Subset the Data__
+
+```{r}
+oh_wi <- c("OH", "WI")
+
+p <-  ggplot(data = midwest, subset = subset(midwest, subset = state %in% oh_wi), mapping = aes(x = percollege))
+
+p + geom_freqpoly(bins = 20)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "midwest_county_percent_college_freqpoly_OH_and_WI.pdf"))
+```
+
+***
+
+__A histogram bins observations for one variable and shows a bar with the count in each bin. We can do this for two variables at once, too. The *geom_bin2d()* function takes two mappings, *x* and *y*. It divides the plot into a grid and colours the bins by the count of observations in them. Try plotting it on the *gapminder* data to plot life expectancy versus per capita GDP.__
+
+```{r}
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+
+p + geom_bin2d()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "lifeexp_vs_gdp_geom_bin2d().pdf"))
+```
+
+The size of the bins needs to be set in 2 dimensions now, e.g. *bins = c(20,50)*.
+
+***
+
+__Density estimates can also be drawn in two dimensions. The *geom_density_2d()* function draws contour lines estimating the joint distribution of two variables.__
+
+__Try it with the *midwest* data, plotting percent below the poverty line (*percbelowpoverty*) against percent college-educated (*percollege*).__
+
+__Try it with a *geom_point()* layer...__
+
+```{r}
+p <-ggplot(data = midwest, mapping = aes(x = percollege, y = percbelowpoverty))
+
+p + geom_density_2d() + geom_point()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "percbelowpoverty_vs_percollege_geom_density_2d()_and_geom_point().pdf"))
+```
+
+__...and without a *geom_point()* layer__
+
+```{r}
+p <-ggplot(data = midwest, mapping = aes(x = percollege, y = percbelowpoverty))
+
+p + geom_density_2d()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "percbelowpoverty_vs_percollege_geom_density_2d().pdf"))
 ```
 
 ## Graph Tables, Make Labels, Add Notes
