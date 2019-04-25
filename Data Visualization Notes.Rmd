@@ -1385,9 +1385,606 @@ ggsave(here("figures", "percbelowpoverty_vs_percollege_geom_density_2d().pdf"))
 
 ## Graph Tables, Make Labels, Add Notes
 
+### Use Pipes to Summarize Data
+
+In the previous chapter, we attempted to break down respondants in a survey by region and religion. We saw that we could see what proportion of each region was from each religion, and what proportion of each religion came from each region (e.g. 60% of people in the South are Protestant vs 50% of all Protestants live in the South).
+
+We did this within the mapping functions and found it to be opaque and confusing.
+
+A better strategy is to construct the frequency table you want *first* and then create plots from it.
+
+We will use the tools provided by the *dplyr*, a component of the tidyverse, to do this. We will use the *pipe* operator, *%>%*.
+
+Think of the *%>%* operator as allowing us to start with a data frame and perform a *sequence* or *pipeline* of operations to turn it into another, usually smaller and more aggregated, table. Data goes in one side of the pipe, actions are performed via functions, and results come out of the other side.
+
+A pipeline is typically a series of operations that do one or more of three things.
+
+* *Group* the data into the nested structure we want for our summary, such as "Religion by Region" or "Authors by Publications by Year". __Use *group_by()*__
+
+* *Filter* or *select* pieces of data by row, column, or both. This gives us the piece of the table we want to work with. __Use *filter()* for rows and *select()* for columns__
+
+* *Mutate* the data by creating new variables at the *current* level of grouping. This adds new columns to the table without aggregating it. __Use *mutate()*__
+
+* *Summarize* or aggregate the grouped data. This creates new variables at a *higher* level of grouping. For example, we might calculate means with *mean()* or counts with *n()*. __Use *summarize()*__
+
+
+__Let's group religion by region__
+
+We will create a new table called *rel_by_region*:
+
 ```{r}
+rel_by_region <- gss_sm %>%
+  
+  group_by(bigregion, religion = fct_explicit_na(religion)) %>%
+
+  summarize(N = n()) %>%
+  
+  mutate(freq = N / sum(N),
+         
+         pct = round((freq*100), 0))
+```
+
+The code reads:
+
+* Create a new object, *rel_by_region*. It will get the result of the following sequence of actions...
+
+* Group the rows by *bigregion* and, within that, by *religion*. I have used *fct_explicit_na()* to deal with missing values of religion.
+
+* Summarize this table to create a new, smaller table, with three columns: *bigregion*, *religion*, and a new summary variable, *N*, that is a count of the number of observations within each religious group for each region.
+
+* With this new table, use the *N* variable to calculate two new columns: the relative proportion (*freq*) and percentage (*pct*) for each religious category, still grouped by region. Round the results to the nearest percentage point.
+
+The *group_by()* function sets up how the grouped or nested data will be processed within the *summarize()* step. Any function used to create a new variable within *summarize()*, such as *mean()* or *sd()* or *n()*, will be applied to the *innermost* grouping level first. Grouping levels are named from left to right within *group_by()* from outermost to innermost. So the function call *summarize(N = n())* counts up the number of observations for each value of *religion* within *bigregion* and puts them in a new variable named *N*. 
+
+The *mutate()* step takes the *N* variable and uses it to create *freq* and *pct*, adding them as columns to the table (without changing the grouping level). So the frequency and percentage for each religion are still grouped by *bigregion*: it is the percentage of the *religion* within the *bigregion* that is calculated.
+
+Notice that we can create and name new variables within *summarize()* and *mutate()*. We have created and named *N*, *freq* and *pct*. Not only that but *freq* is created, named and then __used__ within *mutate()* - it is used to create *pct*.
+
+Our pipeline has taken the *gss_sm* data frame, which has 2,867 rows and 32 columns, and transforms it into *rel_by_region*, a summary table with 24 rows and 5 columns that looks like this, in part:
+
+```{r}
+rel_by_region
+```
+
+A benefit of using *dplyr* is we can perform sanity checks on our code. For instance, the percentages of each relgion should sum to 100 within each region, perhaps with a bit of a rounding error. We can quickly check this using a very short pipeline:
+
+```{r}
+rel_by_region %>% group_by(bigregion) %>% summarize(total = sum(pct))
+```
+
+
+Now that we have percentage values in the table, we can use *geom_col()* rather than *geom_bar()*.
+
+```{r}
+p <- ggplot(data = rel_by_region, mapping = aes(x = bigregion, y = pct, fill = religion))
+
+p + geom_col(position = "dodge2") +
+  
+  labs(x = "Region", y = "Percent", fill = "Religion") +
+  
+  theme(legend.position = "top")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_region_bar_chart.pdf"))
+```
+
+This is still a bad figure - it's too crowded. We can do better. As a rule, dodged charts can be more cleanly expressed as faceted plots. This removes the need for a legend and makes the chart simpler to read.
+
+We will use *coord_flip()* to flip the chart so religion appears on the vertical axis and percentage on the horizontal (without swapping *x* and *y* in the mapping).
+
+```{r}
+p <- ggplot(data = rel_by_region, mapping = aes(x = religion, y = pct, fill = religion))
+
+p + geom_col(position = "dodge2") +
+  
+  labs(x = NULL, y = "Percent", fill = "Religion") +
+  
+  guides(fill = FALSE) +
+
+  coord_flip() +
+  
+  facet_grid(~ bigregion)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "religion_by_region_faceted_horizontal_bar_chart.pdf"))
+```
+
+### Continuous Variables by Group or Category
+
+We will use the *organdata* dataset. *select()* the first 6 columns and then choose rows at random using *sample_n()*.
+
+```{r}
+organdata %>% select(1:6) %>% sample_n(size = 10)
+```
+
+Graph the data as a scatterplot of donors vs years:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = year, y = donors))
+
+p + geom_point()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_vs_year_scatterplot.pdf"))
+```
+
+Let's use a line graph, grouped and faceted by country:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = year, y = donors))
+
+p + geom_line(aes(group = country)) + facet_wrap(~ country)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_vs_year_line_by_country.pdf"))
+```
+
+Let's focus on the country-level variation without paying attention to the time trend.
+
+We will draw a box and whisker plot with *geom_boxplot()*, which uses *stat_boxplot()* to calculate the necessary statistics. We will categorize by the *country* variable and summarize by the continuous *donors* variable.
+
+```{r}
+p <-  ggplot(data = organdata, mapping = aes(x = country, y = donors))
+
+p + geom_boxplot()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_boxplot.pdf"))
+```
+
+The trouble with this plot is that the country labels are overlapping. We can use *coord_flip()* to flip the chart axes (without changing the mappings):
+
+```{r}
+p <-  ggplot(data = organdata, mapping = aes(x = country, y = donors))
+
+p + geom_boxplot() + coord_flip()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_horizontal_boxplot.pdf"))
+```
+
+It would be better to present our data in some meaningful order, for example, listing the countries from a high to a low average donation rate. Reorder the *country* variable by the mean of *donors*. 
+
+Use the *reorder()* function, passing two arguments. The first argument is the factor to reorder (*country*). The second argument is the variable we want to reorder it by (*donors*). There is an optional third argument, which is the summary statistic to order the second variable by (the mean is the default if no third argument is provided, but you could use *median* or *sd*).
+
+However, the default *mean* value will fail if there are missing values, so pass *na.rm = TRUE* as an argument to *reorder()* to remove the *NA* values. Because we are reordering the variable we are mapping to the *x* aesthetic, we will use the *reorder()* function at that point in the code:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = reorder(country, donors, na.rm = TRUE), y = donors))
+
+p + geom_boxplot() + labs(x = NULL) + coord_flip()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_horizontal_boxplot_reordered.pdf"))
+```
+
+A variant on the boxplot is the violin plot, using *geom_violin()*:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = reorder(country, donors, na.rm = TRUE), y = donors))
+
+p + geom_violin() + labs(x = NULL) + coord_flip()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_horizontal_violin_plot_reordered.pdf"))
+```
+
+We can also use *colour* and *fill* aesthetics:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = reorder(country, donors, na.rm = TRUE), y = donors, fill = world))
+
+p + geom_boxplot() + labs(x = NULL) + coord_flip() + theme(legend.position = "top")
 
 ```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_horizontal_boxplot_reordered_fill.pdf"))
+```
+
+It is often useful to put the categories on the y-axis and then have the continuous variable plotted on the x-axis. If there are a relatively small number of observations within each category, we can skip (or supplement) the boxplots by showing the individual observations.
+
+We will just show the observations using *geom_point()* rather than *geom_boxplot()* and using the *colour* aesthetic rather than the *fill*:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = reorder(country, donors, na.rm = TRUE), y = donors, colour = world))
+
+p + geom_point() + labs(x = NULL) + coord_flip() + theme(legend.position = "top")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_horizontal_coloured_points.pdf"))
+```
+
+There is a danger in *geom_point()* that there will be some overplotting of points. Use *geom_jitter()* to randomly nudge each point by a small amount, giving us a better sense of how many observations there are at different values.
+
+```{r}
+p <-  ggplot(data = organdata, mapping = aes(x = reorder(country, donors, na.rm = TRUE), y = donors, colour = world))
+
+p + geom_jitter() + labs(x = NULL) + coord_flip() + theme(legend.position = "top")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_horizontal_jittered_points.pdf"))
+```
+
+We can control the amount of jitter using *height* and *width* arguments to a *position_jitter()* function within the geom.
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(reorder(country, donors, na.rm = TRUE), y = donors, colour = world))
+
+p + geom_jitter(position = position_jitter(width = 0.15)) + labs(x = NULL) + coord_flip() + theme(legend.position = "top")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "organ_donors_by_country_horizontal_controlled_jittered_points.pdf"))
+```
+
+A Cleveland dotplot summarizes a categorial variable with one point per category. We can use a summary statistic, such as the average donation rate.
+
+We will use a *dplyr* pipeline to aggregate the larger country-year data frame to a smaller frame of summary statistics by country.
+
+There are multiple ways to do this. We could choose the variables we want to summarize and then repeatedly use the *mean()* and *sd()* functions to calculate the mean and standard deviations of the variables we want.
+
+```{r}
+by_country <- organdata %>% group_by(consent_law, country) %>%
+  
+  summarize(donors_mean = mean(donors, na.rm = TRUE),
+            donors_sd = sd(donors, na.rm = TRUE),
+            gdp_mean = mean(gdp, na.rm = TRUE),
+            health_mean = mean(health, na.rm = TRUE),
+            roads_mean = mean(roads, na.rm = TRUE),
+            cerebvas_mean = mean(cerebvas, na.rm = TRUE))
+```
+
+Here, we group the data by *consent_law* and, within that, by *country*. Then *summarize()* creates six new variables for the innermost grouping, that is, for each country within each *consent_law*.
+
+The resulting object looks like this:
+
+```{r}
+by_country
+```
+
+There was a lot of repetition in this code, using *mean()* and *sd()*, adding *\_mean* and *\_sd* suffixes. Here is a better way of doing it, which will summarize every numerical variable and name them in a consistent way:
+
+```{r}
+by_country <- organdata %>% group_by(consent_law, country) %>%
+  
+  summarize_if(is.numeric, list(~mean, ~sd), na.rm = TRUE) %>%
+  
+  ungroup()
+```
+
+*summarize_if()* examines each column and applies a test to it - in this case if *is.numeric()* returns *TRUE*. If the test is passed, it applies each function in the *list(~)* function. Finally we ungroup the data. Here is what the pipeline returns:
+
+```{r}
+by_country
+```
+
+Let's plot the average donation rate, *donors_mean* on a Cleveland dotplot, mapping *consent_law* to *colour*:
+
+```{r}
+p <- ggplot(data = by_country, mapping = aes(x = donors_mean, y = reorder(country, donors_mean), colour = consent_law))
+
+p + geom_point(size = 3) + 
+  
+  labs(x = "Donor Procurement Rate",
+       y = "",
+       colour = "Consent Law") +
+  
+  theme(legend.position = "top")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "average_donation_rate_by_country_Cleveland_dotplot.pdf"))
+```
+
+Alternatively, rather than colouring *consent_law* differently, we could facet by it. We will use *facet_wrap(~consent_law)*, having a panel for each of the two consent laws (Informed and Presumed), where countries are ordered by average donation rate within each panel.
+
+There are a couple of wrinkles.
+
+Firstly, by default, *facet_wrap()* will plot the panels side-by-side, making it harder to compare the donation rates (shown on the x-axis). Use the *ncol = 1* argument in *facet_wrap()* to show them in one column, one panel above the other.
+
+Secondly, the y-axis will show all countries on __both__ panels, even though some belong in one panel and some in the other. In that case, only some rows will have points and others will have blanks. Use the *scales = "free_y"* argument in *facet_wrap()*. __This is only sensible for categorical variables, not continuous ones.__
+
+The result of these changes look like this:
+
+```{r}
+p <- ggplot(data = by_country, mapping = aes(x = donors_mean, y = reorder(country, donors_mean)))
+
+p + geom_point(size = 3) +
+  
+  facet_wrap(~consent_law, scales = "free_y", ncol = 1) +
+  
+  labs(x = "Donor Procurement Rate",
+       y = "")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "average_donation_rate_by_country_faceted_Cleveland_dotplot.pdf"))
+```
+
+Cleveland dotplots are generally preferred to bar or column charts. When making them, put the categories on the y-axis and order them in the way that is most relevant to the numerical summary you are providing. 
+
+This sort of plot is also an excellent way to summarize model results or any data with error ranges. Using *geom_pointrange()*, we can show a point estimate and a range around it. Here we will use the standard deviation of the donation rate that we have already calculated. This is also a good way to represent model coefficients with confidence intervals.
+
+With *geom_pointrange()*, we map our *x* and *y* variables as usual. We need to tell it the range of the line to draw on either side of the point, defined by the arguments *ymax* and *ymin*. This is given by the y value (*donors_mean*) plus or minus its standard deviation (*donors_sd*). The function expects a number, but it is OK to give it a mathematical expression that resolves to a number.
+
+```{r}
+p <- ggplot(data = by_country, mapping = aes(x = reorder(country, donors_mean), y = donors_mean))
+
+p + geom_pointrange(mapping = aes(ymin = donors_mean - donors_sd, ymax = donors_mean + donors_sd)) +
+  
+  labs(x = "", y = "Donor Procurement Rate") + coord_flip()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "average_donation_rate_by_country_geom_pointrange().pdf"))
+```
+
+Because *geom_pointrange()* expects *y*, *ymin* and *ymax*, we map *donors_mean* to *y* then flip the axes using *coord_flip()*.
+
+### Plot Text Directly
+
+It can sometimes be useful to plot the labels along with the points in a scatterplot, or just plot informative labels directly. We can do this with *geom_text()*.
+
+```{r}
+p <- ggplot(data = by_country, mapping = aes(x = roads_mean, y = donors_mean))
+
+p + geom_point() + geom_text(mapping = aes(label = country))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_geom_text().pdf"))
+```
+
+Unfortunately, the label appears over each point as they are positioned using the same *x* and *y* mapping. We could drop the points by removing *geom_point()*.
+
+Or we could pass the *hjust* argument to *geom_text()* to left-justify (*hjust = 0*) or right-justify (*hjust = 1*) the label.
+
+```{r}
+p <- ggplot(data = by_country, mapping = aes(x = roads_mean, y = donors_mean))
+
+p + geom_point() + geom_text(mapping = aes(label = country), hjust = 0)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_geom_text()_left_justify.pdf"))
+```
+
+Instead of using *geom_text()*, we will use *ggrepel* which provides *geom_text_repel()* and *geom_label_repel()*.
+
+Install and load the library in the usual way:
+
+```{r}
+library(ggrepel)
+```
+
+We will use *geom_text_repel()* along with the *elections_historic* dataset, which contains historical U.S. presidential election data.
+
+```{r}
+elections_historic %>% select(2:7)
+```
+
+For each year, we see the winning president, along with their share of the electoral college and their share of the popular vote. We will plot these shares against each other for each presidential victory.
+
+```{r fig.width = 10, fig.height = 10}
+p_title <- "Presidential Elections: Popular & Electoral College Margins"
+
+p_subtitle <- "1824-2016"
+
+p_caption <- "Data for 2016 are provisional"
+
+x_label <- "Winner's share of Popular Vote"
+
+y_label <- "Winner's share of Electoral College Votes"
+
+p <- ggplot(elections_historic, mapping = aes(x = popular_pct, 
+                                              y = ec_pct, 
+                                              label = winner_label))
+
+p + geom_hline(yintercept = 0.5, size = 1.4, colour = "gray80") +
+  
+    geom_vline(xintercept = 0.5, size = 1.4, colour = "gray80") +
+  
+    geom_point() +
+  
+    geom_text_repel() +
+  
+    scale_x_continuous(labels = scales::percent) +
+  
+    scale_y_continuous(labels = scales::percent) +
+  
+    labs(x = x_label, y = y_label, title = p_title, subtitle = p_subtitle, caption = p_caption)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "Electoral_College_share_vs_popular_vote_share_geom_text_repel().pdf"))
+```
+
+The shares are stored as proportions (between 0 and 1) rather than percentages, so we adjust the labels of the scales using the *scale_x_continuous()* and *scale_y_continuous()* functions.
+
+We have used *geom_hline()* and *geom_vline()* to plot the horizontal and vertical line, giving it an intercept, size and colour. You can also provide a *geom_abline()* geom, with a slope and intercept
+
+### Label Outliers
+
+Sometimes we want to pick out some points of interest in the data without labelling every single item. We will still use *geom_text()* and *geom_text_repel()*, only we will use *subset()* to pick a subset of the dataset used in *geom_point()*.
+
+```{r}
+p <- ggplot(data = by_country, mapping = aes(x = gdp_mean, y = health_mean))
+
+p + geom_point() +
+  
+    geom_text_repel(data = subset(by_country, gdp_mean > 25000), 
+                    mapping = aes(label = country))
+
+p <- ggplot(data = by_country, mapping = aes(x = gdp_mean, y = health_mean))
+
+p + geom_point() +
+  
+    geom_text_repel(data = subset(by_country,
+                                  gdp_mean > 25000 | health_mean < 1500 | country %in% "Belgium"),
+                    mapping = aes(label = country))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "average_gdp_vs_average_health_label_subsets.pdf"))
+```
+
+We have two plots, with two subsets of the data being passed to *geom_text_repel()*. The *subset()* function takes the *by_country* object, and selects only cases where a logical expression is met.
+
+In the first case, only countries where *gdp_mean* is over 25,000 are labelled.
+
+In the second case, the only countries labelled are those where *gdp_mean* is over 25,000 *or health_mean* is less than 1,500 *or* the country is Belgium.
+
+Alternatively, we can pick out specific points using a specially-created dummy variable. We will create a new column in *organdata* called *ind* which will be coded as *TRUE* if *ccode* is "Ita" or "Spa" and if *year* is greater than 1998.
+
+Then we use *ind* in two ways in the plot. First, we map it to the *colour* aesthetic. Second, we use it to subset the data that will be labelled. We will also use the  *guides()* function to remove the labels that would otherwise appear.
+
+```{r}
+organdata$ind <- organdata$ccode %in% c("Ita", "Spa") & organdata$year > 1998
+
+p <- ggplot(data = organdata,
+            mapping = aes(x = roads, y = donors, colour = ind))
+
+p + geom_point() +
+  
+    geom_text_repel(data = subset(organdata, ind),
+                    mapping = aes(label = ccode)) +
+  
+    guides(label = FALSE, colour = FALSE)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_subset_geom_text_repel().pdf"))
+```
+
+### Write and Draw in the Plot Area
+
+Use *annotate()* to annotate the plot directly. It isn't a *geom* but it __uses__ *geom*s. We will use a text *geom*, so that *annotate()* can access *x*, *y* and *label*, as well as *size*, *colour*, *hjust* and *vjust*. We will use *\\n* as a newline break.
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = roads, y = donors))
+
+p + geom_point() +
+  
+    annotate(geom = "text",
+             x = 91, y = 33,
+             label = "A suprisingly high \n recovery rate.",
+             hjust = 0)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_annotate_text.pdf"))
+```
+
+*annotate()* can work with other *geom*s, such as rectangles, line segments and arrows. Let's add a rectangle:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = roads, y = donors))
+
+p + geom_point() +
+  
+    annotate(geom = "rect", 
+             xmin = 125, xmax = 155,
+             ymin = 30, ymax = 35,
+             fill = "red", alpha = 0.2) +
+  
+    annotate(geom = "text",
+             x = 91, y = 33,
+             label = "A suprisingly high \n recovery rate.",
+             hjust = 0)
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_annotate_rect.pdf"))
+```
+
+### Understanding Scales, Guides and Themes
+
+We have extended our *ggplot* vocabulary, having introduced the *scale_* functions, the *guides()* function and the *theme()* function. Let's learn more.
+
+* Every aesthetic mapping has a scale. If you want to adjust it, __use *scale_* functions__.
+* Many scales come with a legend or key. These are called *guides*. If you want to adjust them, (for example, make them disappear), __use the *guides()* function__.
+* To adjust features of the graph not connected to the logical structure of the data (such as background colours, typefaces or the positioning of legends), __use the *theme()* function__.
+
+Scales and guides are closely connected. Guides provide information about the scale, such as in a legend or a colour bar. Thus it is possible to make adjustments to guides from inside the various *scale_* functions, although it is often easier to use the *guides()* function directly.
+
+Let's look at an example:
+
+```{r}
+p <- ggplot(data = organdata, 
+            mapping = aes(x = roads, 
+                          y = donors, 
+                          colour = world))
+
+p + geom_point()
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_three_mappings.pdf"))
+```
+
+There are three aesthetic mappings. *roads* maps to *x*, *donors* maps to *y* and *world* maps to *colour*.
+
+The *x* and *y* scales are both __continuous__, ranging smoothly from just under the lowest value to just over the highest value. The *colour* mapping also has a scale. *world* is an unordered, categorical variable; so it has a __discrete__ scale. It has four values, so it is represented by four colours.
+
+Mappings like *fill*, *shape* and *size* also have scales. We could have mapped *world* to *shape*, in which case our four-category variable would have a scale consisting of four different shapes. We can still adjust these scales using the *scale_* functions.
+
+Many different kinds of variables can be mapped. Usually, *x* and *y* are continuous measures. But they can be discrete, as when we mapped country names to the y-axis in our boxplots and dotplots. An *x* or *y* mapping can also be defined as a transformation onto a log scale, or a special sort of number like a date.
+
+Similarly a *colour* or *fill* mapping can be discrete and __unordered__ (as with our *world* variable) or discrete and __ordered__ (as with letter grades in an exam). A *colour* or *fill* mapping can also be a continuous quantity, represented as a colour gradient running smoothly from a low to a high value. Finally, both continuous gradients and ordered discrete values might have some defined midpoint with extremes diverging in both directions.
+
+We have a different *scale_* function for each mapping and scale. They are named according to a consistent logic:
+
+> scale\_\<MAPPING\>\_\<KIND\>()
+
+For example, *scale_x_continuous()* controls *x* scales for continuous variables. *scale_y_discrete()* controls *y* scales for discrete variables. *scale_x_log10()* transforms an *x* mapping to a log scale.
+
+If you want to adjust the labels or tick-marks on a scale, you will need to know which mapping it is for and what sort of scale it is. Then you supply the arguments to the appropriate scale function. For example, let's change the x-axis of the previous plot to a log scale and then also change the position and labels of the tick-marks on the y-axis:
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = roads, y = donors, colour = world))
+
+p + geom_point() +
+  
+    scale_x_log10() +
+  
+    scale_y_continuous(breaks = c(5, 15, 25),
+                       labels = c("Five", "Fifteen", "Twenty Five"))
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_x_log_y_change_labels.pdf"))
+```
+
+The same applies to mappings like *colour* and *fill*.
+
+When working with a scale that produces a legend, we can also use its *scale_* function to specify the labels in the key. To change its *title*, however, we use the *labs()* function, which lets us label all the mappings.
+
+```{r}
+p <- ggplot(data = organdata, mapping = aes(x = roads, y = donors, colour = world))
+
+p + geom_point() +
+  
+    scale_colour_discrete(labels = c("Corporatist", "Liberal", "Social Democratic", "Unclassified")) +
+  
+    labs(x = "Road Deaths", y = "Donor Procurement", colour = "Welfare State")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "donors_vs_roads_colour_change_labels.pdf"))
+```
+
+We have already seen that we can move the legend using *theme(legend.position = "top")*. And we can make the legend disappear with *guides(colour = FALSE)*
 
 ## Work with Models
 
