@@ -73,7 +73,6 @@ library(tidyverse)
 
 Notice that here, the braces at the start of the code chunk have some additional options set in them. There is the language, `r`, as before. This is required. Then there is the word `setup`, which is a label for your code chunk. Labels are useful to briefly say what the chunk does. Label names must be unique (no two chunks in the same document can have the same label) and cannot contain spaces. Then, after the comma, an option is set: `include=FALSE`. This tells R to run this code but not to include the output in the final document.
 
-
 When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
 ```{r look}
@@ -96,6 +95,7 @@ We can assign this to a variable. Use **Alt + -** to produce the assignment symb
 
 ```{r}
 my_numbers <- c(1, 2, 3, 1, 3, 5, 25)
+
 your_numbers <- c(5, 31, 71, 1, 3, 21, 6)
 ```
 
@@ -125,6 +125,7 @@ You can assign the result of a function to a variable and output it.
 
 ```{r}
 my_summary <- summary(my_numbers)
+
 my_summary
 ```
 
@@ -273,7 +274,7 @@ gapminder
 We will make a scatterplot of *lifeExp* (life expectancy) against *gdpPerCap* (GDP per capita).
 
 ```{r}
-p <-  ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point()
 ```
@@ -550,7 +551,7 @@ Perhaps five separate smoothers is too many, and we just want one line. But we w
 By default, *geom*s inherit their mappings from the `ggplot()` function. We will map `x` and `y` in the `ggplot()` function as usual, which will be inherited by the *geom_* functions. We will then use `mapping = aes(colour = continent)` **only** in `geom_point()`. This ensures that the points are colour-coded by continent, but `geom_smooth()` will only plot one line, as it does not map *continent* in any way.
 
 ```{r}
-p <-  ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
+p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp))
 
 p + geom_point(mapping = aes(colour = continent)) +
 
@@ -904,7 +905,7 @@ Data can be cross-classified by two categorical variables by using `facet_grid()
 We wish to make a smoothed scatterplot of the relationship between the age of the respondent (*age*) and the number of children they have (*childs*). We will facet this relationship by *sex* and *race*, using `facet_grid(sex ~ race)`:
 
 ```{r}
-p <-  ggplot(data = gss_sm,
+p <- ggplot(data = gss_sm,
 
              mapping = aes(x = age, y = childs))
 
@@ -930,7 +931,7 @@ Every *geom_* function has an associated *stat_* function and vice versa.
 Sometimes the calculations done by the *stat_* functions are not immediately obvious. Consider `geom_bar()`:
 
 ```{r}
-p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion))
 
 p + geom_bar()
 ```
@@ -944,7 +945,7 @@ The bar height gives the count of observations from each region of the USA. Ther
 >  mapping = aes(\<variable\> = \<..statistic..\>)
 
 ```{r}
-p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion))
 
 p + geom_bar(mapping = aes(y = ..prop..))
 ```
@@ -956,7 +957,7 @@ ggsave(here("figures", "bigregion_barchart_prop_wrong.pdf"))
 This is not what we want. The data is being grouped by the x-categories, whereas we want the whole data to be grouped, so each bar represents the proportion of the whole data. We do this using `group = 1` inside the `aes()` call (1 being a "dummy group" representing the whole dataset).
 
 ```{r}
-p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion))
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion))
 
 p + geom_bar(mapping = aes(y = ..prop.., group = 1))
 ```
@@ -1038,7 +1039,7 @@ ggsave(here("figures", "religion_by_bigregion_using_position_dodge_y_prop_barcha
 ...but this is not useful. The problem is we are seeing the proportion of Protestants that are Protestant (and Catholics are Catholic etc.) in each region, which is 100% in each case. Previously we fixed this using the `group` argument. If we set `group = religion`...
 
 ```{r}
-p <-  ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
+p <- ggplot(data = gss_sm, mapping = aes(x = bigregion, fill = religion))
 
 p + geom_bar(position = "dodge", mapping = aes(y = ..prop.., group = religion))
 ```
@@ -1112,7 +1113,7 @@ ggsave(here("figures", "midwest_county_percent_college_histogram_OH_and_WI.pdf")
 An alternative to a histogram is to calculate a kernel density estimate of the underlying distribution. The `geom_density()` function will do this:
 
 ```{r}
-p <-  ggplot(data = midwest, mapping = aes(x = area))
+p <- ggplot(data = midwest, mapping = aes(x = area))
 
 p + geom_density()
 ```
@@ -1124,7 +1125,7 @@ ggsave(here("figures", "midwest_county_area_density.pdf"))
 A similar plot can be achieved using `geom_line(stat = "density")`, which removes the lines at the sides and bottom of the area (and doesn't allow a fill):
 
 ```{r}
-p <-  ggplot(data = midwest, mapping = aes(x = area))
+p <- ggplot(data = midwest, mapping = aes(x = area))
 
 p + geom_line(stat = "density")
 ```
@@ -1234,7 +1235,7 @@ ggsave(here("figures", "difference_between_US_and_other_OECD_countries_average_l
 **Try plotting population and per capita GDP while faceting on year**
 
 ```{r}
-p <-  ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
+p <- ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
 
 p + geom_point(colour = "gray70") + geom_smooth(se = FALSE) + facet_wrap(~year)
 ```
@@ -1246,7 +1247,7 @@ ggsave(here("figures", "gdp_vs_pop_facet_year.pdf"))
 **Try plotting population and per capita GDP while faceting on country**
 
 ```{r fig.width=25, fig.height=25}
-p <-  ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
+p <- ggplot(data = gapminder, mapping = aes(x = pop, y = gdpPercap))
 
 p + geom_point(colour = "gray70") + geom_smooth(se = FALSE) + facet_wrap(~country)
 ```
@@ -1258,7 +1259,7 @@ p + geom_point(colour = "gray70") + geom_smooth(se = FALSE) + facet_wrap(~countr
 If we use `facet_grid(sex ~ race)`...
 
 ```{r}
-p <-  ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
+p <- ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
 
 p + geom_point(alpha = 0.2) + geom_smooth() + facet_grid(sex ~ race)
 ```
@@ -1272,7 +1273,7 @@ ggsave(here("figures", "facet_grid(sex_~_race).pdf"))
 If we use `facet_grid(~ sex + race)`...
 
 ```{r}
-p <-  ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
+p <- ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
 
 p + geom_point(alpha = 0.2) + geom_smooth() + facet_grid(~ sex + race)
 ```
@@ -1288,7 +1289,7 @@ ggsave(here("figures", "facet_grid(~_sex_+_race).pdf"))
 **Experiment to see what happens when you use *facet_wrap()* with more complex formulas like *facet_wrap(~ sex + race)* instead of *facet_grid()*.**
 
 ```{r}
-p <-  ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
+p <- ggplot(data = gss_sm, mapping = aes(x = age, y = childs))
 
 p + geom_point(alpha = 0.2) + geom_smooth() + facet_wrap(~ sex + race)
 ```
@@ -1306,7 +1307,7 @@ ggsave(here("figures", "facet_wrap(~_sex_+_race).pdf"))
 **Default *geom_freqpoly()***
 
 ```{r}
-p <-  ggplot(data = midwest, mapping = aes(x = area))
+p <- ggplot(data = midwest, mapping = aes(x = area))
 
 p + geom_freqpoly()
 ```
@@ -1320,7 +1321,7 @@ ggsave(here("figures", "midwest_count_area_freqpoly_default_bins.pdf"))
 We can still define `bins` and `binwidth`...
 
 ```{r}
-p <-  ggplot(data = midwest, mapping = aes(x = area))
+p <- ggplot(data = midwest, mapping = aes(x = area))
 
 p + geom_freqpoly(bins = 10)
 ```
@@ -1334,7 +1335,7 @@ ggsave(here("figures", "midwest_count_area_freqpoly_10_bins.pdf"))
 ```{r}
 oh_wi <- c("OH", "WI")
 
-p <-  ggplot(data = midwest, subset = subset(midwest, subset = state %in% oh_wi), mapping = aes(x = percollege))
+p <- ggplot(data = midwest, subset = subset(midwest, subset = state %in% oh_wi), mapping = aes(x = percollege))
 
 p + geom_freqpoly(bins = 20)
 ```
@@ -1534,7 +1535,7 @@ Let's focus on the country-level variation without paying attention to the time 
 We will draw a box and whisker plot with `geom_boxplot()`, which uses `stat_boxplot()` to calculate the necessary statistics. We will categorize by the *country* variable and summarize by the continuous *donors* variable.
 
 ```{r}
-p <-  ggplot(data = organdata, mapping = aes(x = country, y = donors))
+p <- ggplot(data = organdata, mapping = aes(x = country, y = donors))
 
 p + geom_boxplot()
 ```
@@ -1546,7 +1547,7 @@ ggsave(here("figures", "organ_donors_by_country_boxplot.pdf"))
 The trouble with this plot is that the country labels are overlapping. We can use `coord_flip()` to flip the chart axes (without changing the mappings):
 
 ```{r}
-p <-  ggplot(data = organdata, mapping = aes(x = country, y = donors))
+p <- ggplot(data = organdata, mapping = aes(x = country, y = donors))
 
 p + geom_boxplot() + coord_flip()
 ```
@@ -1613,7 +1614,7 @@ ggsave(here("figures", "organ_donors_by_country_horizontal_coloured_points.pdf")
 There is a danger in `geom_point()` that there will be some overplotting of points. Use `geom_jitter()` to randomly nudge each point by a small amount, giving us a better sense of how many observations there are at different values.
 
 ```{r}
-p <-  ggplot(data = organdata, mapping = aes(x = reorder(country, donors, na.rm = TRUE), y = donors, colour = world))
+p <- ggplot(data = organdata, mapping = aes(x = reorder(country, donors, na.rm = TRUE), y = donors, colour = world))
 
 p + geom_jitter() + labs(x = NULL) + coord_flip() + theme(legend.position = "top")
 ```
