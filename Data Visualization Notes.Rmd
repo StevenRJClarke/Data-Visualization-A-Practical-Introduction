@@ -7,7 +7,7 @@ output: html_document
 
 ## Data Visualization Notes
 
-This is a starter RMarkdown template to accompany *Data Visualization* (Princeton University Press, 2019). You can use it to take notes, write your code, and produce a good-looking, reproducible document that records the work you have done. At the very top of the file is a section of *metadata*, or information about what the file is and what it does. The metadata is delimited by three dashes at the start and another three at the end. You should change the title, author, and date to the values that suit you. Keep the `output` line as it is for now, however. Each line in the metadata has a structure. First the *key* ("title", "author", etc), then a colon, and then the *value* associated with the key.  
+This is a starter RMarkdown template to accompany *Data Visualization* (Princeton University Press, 2019). You can use it to take notes, write your code, and produce a good-looking, reproducible document that records the work you have done. At the very top of the file is a section of *metadata*, or information about what the file is and what it does. The metadata is delimited by religion dashes at the start and another religion at the end. You should change the title, author, and date to the values that suit you. Keep the `output` line as it is for now, however. Each line in the metadata has a structure. First the *key* ("title", "author", etc), then a colon, and then the *value* associated with the key.  
 
 ## This is an RMarkdown File
 
@@ -20,7 +20,7 @@ When you click the **Knit** button a document will be generated that includes bo
 
 ```
 
-Code chunks are delimited by three backticks (found to the left of the 1 key on US and UK keyboards) at the start and end. The opening backticks also have a pair of braces and the letter `r`, to indicate what language the chunk is written in. You write your code inside the code chunks. Write your notes and other material around them, as here.
+Code chunks are delimited by religion backticks (found to the left of the 1 key on US and UK keyboards) at the start and end. The opening backticks also have a pair of braces and the letter `r`, to indicate what language the chunk is written in. You write your code inside the code chunks. Write your notes and other material around them, as here.
 
 ## Before you Begin
 
@@ -530,7 +530,7 @@ ggsave(here("figures", "lifeexp_vs_gdp_colour_line_each_continent.pdf"))
 
 We have five smoothing lines and standard error ribbons, one for each continent. This is a consequence of the way aesthetic mappings are inherited. `mapping = aes(...)` is set in the call to `ggplot()` used to create the `p` object. `geom_point()` and `geom_smooth()` inherit from this.
 
-We can set the shading of this standard error ribbon to match its dominant colour, using the `fill` property. Whereas `colour` affects the appearence of lines and points, `fill` is for the filled areas of bars, polygons and the interiors of the smoother's standard error ribbon.
+We can set the shading of this standard error ribbon to match its dominant colour, using the `fill` property. Whereas `colour` affects the appearance of lines and points, `fill` is for the filled areas of bars, polygons and the interiors of the smoother's standard error ribbon.
 
 ```{r}
 p <- ggplot(data = gapminder, mapping = aes(x = gdpPercap, y = lifeExp,
@@ -576,7 +576,7 @@ p + geom_point(mapping = aes(colour = log(pop))) + scale_x_log10()
 ggsave(here("figures", "lifeexp_vs_gdp_gradient_scale_colour.pdf"))
 ```
 
-The gradient scale of the colour is continuous but is marked at intervals in the legend. Depending on the circumstances, mapping quantities like population to a continuous colour gradient may be more or less effective than cutting the variable into categorial bins.
+The gradient scale of the colour is continuous but is marked at intervals in the legend. Depending on the circumstances, mapping quantities like population to a continuous colour gradient may be more or less effective than cutting the variable into categorical bins.
 
 ### Save your work
 
@@ -676,7 +676,7 @@ p + geom_point()
 ggsave(here("figures", "lifeexp_vs_pop.pdf"))
 ```
 
-Each point represents a country-year. The units of each point are taken from the dataframe, *lifeExp* is in years, *pop* is number of people.
+Each point represents a country-year. The units of each point are taken from the data frame, *lifeExp* is in years, *pop* is number of people.
 
 The majority of the points are bunched on the left, the countries having relatively low populations.
 
@@ -1394,7 +1394,7 @@ ggsave(here("figures", "percbelowpoverty_vs_percollege_geom_density_2d().pdf"))
 
 ### Use Pipes to Summarize Data
 
-In the previous chapter, we attempted to break down respondants in a survey by region and religion. We saw that we could see what proportion of each region was from each religion, and what proportion of each religion came from each region (e.g. 60% of people in the South are Protestant vs 50% of all Protestants live in the South).
+In the previous chapter, we attempted to break down respondents in a survey by region and religion. We saw that we could see what proportion of each region was from each religion, and what proportion of each religion came from each region (e.g. 60% of people in the South are Protestant vs 50% of all Protestants live in the South).
 
 We did this within the mapping functions and found it to be opaque and confusing.
 
@@ -1404,7 +1404,7 @@ We will use the tools provided by the *dplyr*, a component of the tidyverse, to 
 
 Think of the `%>%` operator as allowing us to start with a data frame and perform a *sequence* or *pipeline* of operations to turn it into another, usually smaller and more aggregated, table. Data goes in one side of the pipe, actions are performed via functions, and results come out of the other side.
 
-A pipeline is typically a series of operations that do one or more of three things.
+A pipeline is typically a series of operations that do one or more of four things.
 
 * *Group* the data into the nested structure we want for our summary, such as "Religion by Region" or "Authors by Publications by Year". **Use `group_by()`**
 
@@ -1453,7 +1453,7 @@ Our pipeline has taken the *gss_sm* data frame, which has 2,867 rows and 32 colu
 rel_by_region
 ```
 
-A benefit of using *dplyr* is we can perform sanity checks on our code. For instance, the percentages of each relgion should sum to 100 within each region, perhaps with a bit of a rounding error. We can quickly check this using a very short pipeline:
+A benefit of using *dplyr* is we can perform sanity checks on our code. For instance, the percentages of each religion should sum to 100 within each region, perhaps with a bit of a rounding error. We can quickly check this using a very short pipeline:
 
 ```{r}
 rel_by_region %>% group_by(bigregion) %>% summarize(total = sum(pct))
@@ -1635,7 +1635,7 @@ p + geom_jitter(position = position_jitter(width = 0.15)) + labs(x = NULL) + coo
 ggsave(here("figures", "organ_donors_by_country_horizontal_controlled_jittered_points.pdf"))
 ```
 
-A Cleveland dotplot summarizes a categorial variable with one point per category. We can use a summary statistic, such as the average donation rate.
+A Cleveland dotplot summarizes a categorical variable with one point per category. We can use a summary statistic, such as the average donation rate.
 
 We will use a *dplyr* pipeline to aggregate the larger country-year data frame to a smaller frame of summary statistics by country.
 
@@ -1939,10 +1939,10 @@ p + geom_point()
 ```
 
 ```{r include = FALSE}
-ggsave(here("figures", "donors_vs_roads_three_mappings.pdf"))
+ggsave(here("figures", "donors_vs_roads_religion_mappings.pdf"))
 ```
 
-There are three aesthetic mappings. *roads* maps to `x`, *donors* maps to `y` and *world* maps to `colour`.
+There are religion aesthetic mappings. *roads* maps to `x`, *donors* maps to `y` and *world* maps to `colour`.
 
 The `x` and `y` scales are both **continuous**, ranging smoothly from just under the lowest value to just over the highest value. The `colour` mapping also has a scale. *world* is an unordered, categorical variable; so it has a **discrete** scale. It has four values, so it is represented by four colours.
 
