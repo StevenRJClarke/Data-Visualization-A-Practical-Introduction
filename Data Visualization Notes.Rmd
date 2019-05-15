@@ -1459,7 +1459,6 @@ A benefit of using *dplyr* is we can perform sanity checks on our code. For inst
 rel_by_region %>% group_by(bigregion) %>% summarize(total = sum(pct))
 ```
 
-
 Now that we have percentage values in the table, we can use `geom_col()` rather than `geom_bar()`.
 
 ```{r}
@@ -1695,6 +1694,21 @@ ggsave(here("figures", "average_donation_rate_by_country_Cleveland_dotplot.pdf")
 ```
 
 Alternatively, rather than colouring *consent_law* differently, we could facet by it. We will use `facet_wrap(~consent_law)`, having a panel for each of the two consent laws (Informed and Presumed), where countries are ordered by average donation rate within each panel.
+
+```{r}
+p <- ggplot(data = by_country, mapping = aes(x = donors_mean, y = reorder(country, donors_mean)))
+
+p + geom_point(size = 3) +
+  
+    facet_wrap(~consent_law) +
+    
+    labs(x = "Donor Procurement Rate",
+         y = "")
+```
+
+```{r include = FALSE}
+ggsave(here("figures", "average_donation_rate_by_country_faceted_Cleveland_dotplot_with_wrinkles.pdf"))
+```
 
 There are a couple of wrinkles.
 
